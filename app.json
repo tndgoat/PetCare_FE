@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "PetCare",
+    "slug": "PetCare",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#DB3169"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#DB3169"
+      },
+      "package": "com.tndgoat.PetCare"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "PetCare",
+          "project": "react-native"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ea02beb1-52a3-4c76-8355-7e787327d8a6"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ea02beb1-52a3-4c76-8355-7e787327d8a6"
+    }
+  }
+}
