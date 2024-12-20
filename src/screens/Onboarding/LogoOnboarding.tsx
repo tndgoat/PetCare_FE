@@ -1,40 +1,45 @@
-import { ImageBackground, View, Image, Text, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Image, ActivityIndicator, SafeAreaView, Dimensions, StyleSheet } from 'react-native'
 import Logo from '../../images/logo.png'
-import Background from '../../images/bgg.png'
-import { NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-const { width, height } = Dimensions.get('window')
+const { width } = Dimensions.get('window')
 
 const LogoOnboarding = ({ navigation }: any) => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+      navigation.navigate('OnboardingScreen')
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [navigation])
+
   return (
-    <TouchableOpacity
-      style={{
-        width: width,
-        overflow: 'hidden',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-      onPress={() => navigation.navigate('OnboardingScreen')}
-    >
-      <ImageBackground source={Background}>
-        <SafeAreaView
-          style={{
-            opacity: 0,
-          }}
-        />
-        <Image
-          source={Logo}
-          style={{
-            maxWidth: '100%',
-            resizeMode: 'contain',
-          }}
-        />
-        <SafeAreaView style={{ opacity: 0 }} />
-      </ImageBackground>
-    </TouchableOpacity>
+    <SafeAreaView style={localStyles.container}>
+      <View style={localStyles.innerContainer}>
+        <Image source={Logo} style={localStyles.logo} />
+        <ActivityIndicator color="#ffffff" size={20} />
+      </View>
+    </SafeAreaView>
   )
 }
+
+const localStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#DB3169',
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: (width * 198) / 430,
+    resizeMode: 'contain',
+  },
+})
 
 export default LogoOnboarding
