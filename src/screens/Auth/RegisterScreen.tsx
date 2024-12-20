@@ -17,6 +17,7 @@ const scaleWidth = Dimensions.get('window').width
 const scaleHeight = scaleWidth / imageAspectRatio
 
 const RegisterScreen = ({ navigation }: any) => {
+  const [isCheck, setIsCheck] = useState(false)
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const dispatch = useDispatch()
@@ -116,87 +117,48 @@ const RegisterScreen = ({ navigation }: any) => {
           <View style={styles.title}>
             <Text
               style={{
-                fontSize: 40,
-                fontWeight: '700',
-                color: ColorSystem.primary[900],
-                alignSelf: 'center',
+                fontSize: 24,
+                fontWeight: 'semibold',
+                color: '#101623',
               }}
             >
-              Đăng ký
+              Sign Up
             </Text>
-            <Text
-              style={{
-                fontSize: 40,
-                fontWeight: '700',
-                color: ColorSystem.primary[900],
-                paddingBottom: 60,
-                alignSelf: 'center',
-              }}
-            >
-              PetCare
-            </Text>
-            <Text style={{ textAlign: 'center', fontSize: 17 }}>Hãy đăng ký để trải nghiệm những tính năng quản lý tài chính đầy hấp dẫn đang chờ đợi bạn.</Text>
           </View>
           <View>
             <View style={styles.form}>
               <View style={styles.group}>
-                <Icon style={styles.icon} name="person" color={ColorSystem.primary[800]} />
-                <TextInput style={styles.input} autoCapitalize="none" placeholder="Tên của bạn" onChangeText={(value) => setName(value)}></TextInput>
+                <Icon style={styles.icon} name="person" color="#DB3169" />
+                <TextInput style={styles.input} autoCapitalize="none" placeholder="Enter your name" onChangeText={(value) => setName(value)}></TextInput>
                 {!checkName && <Text style={{ color: 'red' }}>Tên người dùng không được để trống</Text>}
               </View>
               <View style={styles.group}>
-                <Icon style={styles.icon} name="email" color={ColorSystem.primary[800]} />
-                <TextInput style={styles.input} autoCapitalize="none" placeholder="Email" onChangeText={(value) => setEmail(value)}></TextInput>
+                <Icon style={styles.icon} name="email" color="#DB3169" />
+                <TextInput style={styles.input} autoCapitalize="none" placeholder="Enter your email" onChangeText={(value) => setEmail(value)}></TextInput>
                 {!checkMail && <Text style={{ color: 'red' }}>Email không đúng định dạng</Text>}
               </View>
               <View style={styles.group}>
-                <Icon style={styles.icon} name="locked" color={ColorSystem.primary[800]} />
-                <TextInput secureTextEntry={true} style={styles.input} placeholder="Mật khẩu" onChangeText={(value) => setPassword(value)}></TextInput>
+                <Icon style={styles.icon} name="locked" color="#DB3169" />
+                <TextInput secureTextEntry={true} style={styles.input} placeholder="Enter your password" onChangeText={(value) => setPassword(value)}></TextInput>
                 <Text style={{ color: 'red' }}>{errorPass}</Text>
               </View>
-              {/* <View style={styles.group1}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <CheckBox
-                    disabled={false}
-                    value={isCheck}
-                    onValueChange={() => setIsCheck(!isCheck)}
-                  />
-                  <Text style={{ marginLeft: 6 }}>Ghi nhớ đăng nhập</Text>
+              <View style={styles.group1}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CheckBox disabled={false} value={isCheck} onValueChange={() => setIsCheck(!isCheck)} color="#DB3169" />
+                  <Text style={{ marginLeft: 6 }}>Agree to Terms of Service and Privacy Policy</Text>
                 </View>
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      Alert.alert("Quen mat khau");
-                    }}
-                  >
-                    <Text style={{ color: "#0386D0" }}>Quên mật khẩu?</Text>
-                  </TouchableOpacity>
-                </View>
-              </View> */}
+              </View>
               <TouchableOpacity onPress={() => onSubmit()} style={styles.btn}>
-                <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>Đăng ký</Text>
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>Sign Up</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')} style={styles.btnRegister}>
-                <Text style={{ color: '#fff', fontWeight: '300', fontSize: 16 }}>Đã có tài khoản?</Text>
-                <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}> Đăng nhập ngay</Text>
+                <Text style={{ color: '#717784', fontWeight: '300', fontSize: 16 }}>Already have an account?</Text>
+                <Text style={{ color: '#DB3169', fontWeight: '600', fontSize: 16 }}> Login</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </View>
-
-      <Image
-        style={{
-          zIndex: -1,
-          //   backgroundColor: "cyan",
-          position: 'absolute',
-          bottom: -200,
-          width: scaleWidth,
-          height: undefined,
-          aspectRatio: 0.9,
-        }}
-        source={Footer}
-      />
     </SafeAreaView>
   )
 }
@@ -208,6 +170,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
+  containerview: {
+    paddingHorizontal: 30,
+  },
+  form: {
+    marginTop: 50,
+  },
+  group: {
+    marginTop: 15,
+  },
   loading: {
     position: 'absolute',
     left: 0,
@@ -217,15 +188,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
-  },
-  containerview: {
-    paddingHorizontal: 30,
-  },
-  form: {
-    marginTop: 50,
-  },
-  group: {
-    marginTop: 15,
   },
   group1: {
     marginTop: 20,
@@ -243,7 +205,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     marginTop: 30,
-    backgroundColor: ColorSystem.primary[800],
+    backgroundColor: '#DB3169',
     paddingVertical: 15,
     alignItems: 'center',
     borderRadius: 10,
@@ -252,14 +214,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 30,
-    backgroundColor: ColorSystem.secondary[800],
+    backgroundColor: '#fff',
     paddingVertical: 15,
     borderRadius: 10,
   },
 
   title: {
-    marginTop: 40,
-    alignItems: 'flex-start',
+    marginTop: 20,
+    alignItems: 'center',
   },
   icon: {
     fontSize: 25,
