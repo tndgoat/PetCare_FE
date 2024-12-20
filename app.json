@@ -13,7 +13,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tndgoat.PetCare"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,14 +37,15 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "ea02beb1-52a3-4c76-8355-7e787327d8a6"
+        "projectId": "8fd3582f-4460-45d3-9714-6bd559cba22d"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/ea02beb1-52a3-4c76-8355-7e787327d8a6"
-    }
+      "url": "https://u.expo.dev/8fd3582f-4460-45d3-9714-6bd559cba22d"
+    },
+    "owner": "tndgoat"
   }
 }

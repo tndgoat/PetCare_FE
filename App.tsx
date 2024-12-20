@@ -6,18 +6,20 @@ import { store } from './src/store'
 import AppMenuProvider from './src/navigation/AppMenuProvider'
 import Toast from 'react-native-toast-message'
 import * as Sentry from '@sentry/react-native'
+import ScheduleScreen from './src/screens/Schedule/ScheduleScreen'
 
 const Stack = createStackNavigator()
 Sentry.init({
-  dsn: 'https://221748e12638aaeb8cdb4625acef036c@o4507321111674880.ingest.us.sentry.io/4507321115082752',
+  dsn: 'https://e3171e9ce907fe960e53013922c95c8d@o4508501516746752.ingest.us.sentry.io/4508501518516224',
 })
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <AppMenuProvider></AppMenuProvider>
-      <Toast />
-    </Provider>
+    // <Provider store={store}>
+    //   <AppMenuProvider></AppMenuProvider>
+    //   <Toast />
+    // </Provider>
+    <ScheduleScreen />
   )
 }
 

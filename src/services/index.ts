@@ -3,7 +3,7 @@ import { RootState } from '../store'
 
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://petcare-be-an3a.onrender.com',
+    baseUrl: 'https://petcare-sdbq.onrender.com',
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as RootState
       const token = state.LoginStatus.accessToken
