@@ -45,7 +45,7 @@ const LandingScreen = ({ navigation }: any) => {
             marginBottom: 16,
             marginHorizontal: 60,
           }}
-          onPress={() => alert('Pressed!')}
+          onPress={() => navigation.navigate('LoginScreen')}
         >
           <Text
             style={{
@@ -66,7 +66,7 @@ const LandingScreen = ({ navigation }: any) => {
             paddingVertical: 22,
             marginHorizontal: 60,
           }}
-          onPress={() => alert('Pressed!')}
+          onPress={() => navigation.navigate('RegisterScreen')}
         >
           <Text
             style={{

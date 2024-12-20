@@ -6,7 +6,6 @@ import { store } from './src/store'
 import AppMenuProvider from './src/navigation/AppMenuProvider'
 import Toast from 'react-native-toast-message'
 import * as Sentry from '@sentry/react-native'
-import PetsScreen from './src/screens/Pets/PetsScreen'
 
 const Stack = createStackNavigator()
 Sentry.init({
@@ -15,11 +14,10 @@ Sentry.init({
 
 const App = () => {
   return (
-    // <Provider store={store}>
-    //   <AppMenuProvider></AppMenuProvider>
-    //   <Toast />
-    // </Provider>
-    <PetsScreen />
+    <Provider store={store}>
+      <AppMenuProvider></AppMenuProvider>
+      <Toast />
+    </Provider>
   )
 }
 

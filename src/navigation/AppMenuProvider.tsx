@@ -3,6 +3,7 @@ import 'react-native-gesture-handler'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import OnboardingScreen from '../screens/Onboarding/OnboardingScreen'
+import LandingScreen from '../screens/Onboarding/LandingScreen'
 import HomeScreen from '../screens/Home/HomeScreen'
 import LogoOnboarding from '../screens/Onboarding/LogoOnboarding'
 import BottomBarNavigation from './BottomBarNavigation'
@@ -44,6 +45,7 @@ const AppMenuProvider = () => {
         <>
           <Stack.Screen name="LogoOnboarding" component={LogoOnboarding} />
           <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
+          <Stack.Screen name="LandingScreen" component={LandingScreen} />
         </>
         {/* )} */}
         {!isLogin && (

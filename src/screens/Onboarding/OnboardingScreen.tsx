@@ -101,7 +101,7 @@ const OnboardingScreen = ({ navigation }) => {
         <View style={{ marginBottom: 20 }}>
           {currentSlideIndex == slides.length - 1 ? (
             <View style={{ height: 50 }}>
-              <TouchableOpacity style={styles.btn} onPress={() => navigation.replace('LoginScreen')}>
+              <TouchableOpacity style={styles.btn} onPress={() => navigation.replace('LandingScreen')}>
                 <Text style={{ color: '#DB3169', fontWeight: 'bold', fontSize: 15 }}>GET STARTED</Text>
               </TouchableOpacity>
             </View>
