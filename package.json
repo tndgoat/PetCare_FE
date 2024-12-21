@@ -11,6 +11,7 @@
     "devtools": "react-devtools"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.5.20",
@@ -28,14 +29,17 @@
     "expo-updates": "~0.26.10",
     "moment": "^2.30.1",
     "react": "18.3.1",
+    "react-hook-form": "^7.54.2",
     "react-native": "0.76.5",
     "react-native-calendars": "^1.1304.1",
     "react-native-circular-progress": "^1.4.0",
     "react-native-currency-input": "^1.1.1",
+    "react-native-date-picker": "^5.0.8",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-icon-picker": "^1.0.6",
+    "react-native-image-picker": "^5.6.0",
     "react-native-modern-datepicker": "^1.0.0-beta.91",
     "react-native-pie-chart": "^3.0.2",
     "react-native-popup-menu": "^0.16.1",
@@ -47,7 +51,8 @@
     "react-native-svg": "15.8.0",
     "react-native-toast-message": "^2.2.0",
     "react-redux": "^9.1.1",
-    "xdate": "^0.8.2"
+    "xdate": "^0.8.2",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
