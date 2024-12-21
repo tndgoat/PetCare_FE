@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import PetCard, { PetProps } from "./components/PetCard";
+import { useNavigation } from "@react-navigation/native";
 
 const SAMPLE_PETS: PetProps[] = [
   {
@@ -45,22 +46,20 @@ const SAMPLE_PETS: PetProps[] = [
 ];
 
 const PetListScreen: React.FC = () => {
+  const navigation = useNavigation<any>();
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.headerButton}>‹</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Pets</Text>
-        <TouchableOpacity>
-          <Text style={styles.headerButton}>+</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView style={styles.scrollView}>
         {SAMPLE_PETS.map((pet) => (
           <PetCard key={pet.id} pet={pet} />
         ))}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.addButton}
+          onPress={() => navigation.navigate("AddPet")}
+        >
+          <Text style={styles.addButtonText}>Add Pet</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -70,26 +69,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-  },
-  headerButton: {
-    fontSize: 24,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
+    position: "relative",
   },
   scrollView: {
     flex: 1,
     paddingTop: 20,
+  },
+  addButton: {
+    display: "flex",
+    alignItems: "center",
+    margin: "auto",
+    justifyContent: "center",
+    width: "90%",
+    padding: 10,
+    marginVertical: 16,
+    borderColor: "pink",
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: "#333",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 

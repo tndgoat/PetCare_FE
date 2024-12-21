@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 export interface PetProps {
   id: string;
@@ -22,18 +23,18 @@ export interface PetProps {
 }
 
 const PetCard: React.FC<{ pet: PetProps }> = ({ pet }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   return (
     <TouchableOpacity
       style={styles.petCard}
       activeOpacity={0.7}
-      // onPress={() => navigation.navigate("PetProfileScreen", { petId: pet.id })}
+      onPress={() => navigation.navigate("PetProfileScreen", { petData: pet })}
     >
       <Image
         source={{ uri: pet.imageUrl }}
         style={styles.petImage}
-        defaultSource={require("../../../assets/pet-placholder2.png")}
+        defaultSource={require("../../../../assets/pet-placholder2.png")}
       />
       <View style={styles.petInfo}>
         <Text style={styles.petName}>{pet.name}</Text>
