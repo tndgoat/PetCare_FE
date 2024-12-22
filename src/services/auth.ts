@@ -1,24 +1,24 @@
 // auth.ts
-import { apiSlice } from ".";
-import { AuthInfo, SignInDto } from "../types";
+import { apiSlice } from '.'
+import { AuthInfo, SignInDto } from '../types'
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     postLogin: builder.mutation<AuthInfo, SignInDto>({
       query: (body) => ({
-        url: "/auth/login",
-        method: "POST",
+        url: '/auth',
+        method: 'POST',
         body: body,
       }),
     }),
     postRegister: builder.mutation({
       query: (body) => ({
-        url: "/auth/signup",
-        method: "POST",
+        url: '/users',
+        method: 'POST',
         body: body,
       }),
     }),
   }),
-});
+})
 
-export const { usePostLoginMutation, usePostRegisterMutation } = authApiSlice;
+export const { usePostLoginMutation, usePostRegisterMutation } = authApiSlice

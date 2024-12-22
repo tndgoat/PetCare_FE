@@ -1,105 +1,71 @@
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/Home/HomeScreen";
-import TempScreen from "../screens/TempScreen";
-import {
-  MaterialCommunityIcons,
-  SimpleLineIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
-import WalletScreen from "../screens/Wallet/WalletScreen";
-import ColorSystem from "../color/ColorSystem";
-import GoalScreen from "../screens/Goal/GoalScreen";
-import StatisticScreen from "../screens/Statistic/StatisticScreen";
-import OtherScreen from "../screens/Other/Other";
-import { useAppSelector } from "../hooks/redux";
-import { RootState } from "../store";
-const Tab = createBottomTabNavigator();
+import React from 'react'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import HomeScreen from '../screens/Home/HomeScreen'
+import FeedsScreen from '../screens/Feeds/FeedsScreen'
+import ClinicsScreen from '../screens/Clinics/ClinicScreen'
+import ScheduleScreen from '../screens/Schedule/ScheduleScreen'
+import ProfileScreen from '../screens/Profile/ProfileScreen'
+import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons'
+import ColorSystem from '../color/ColorSystem'
+import { useAppSelector } from '../hooks/redux'
+import { RootState } from '../store'
+
+const Tab = createBottomTabNavigator()
 export default function BottomBarNavigation() {
-  const login = useAppSelector((state: RootState) => state.LoginStatus.isLogin);
-  if (!login) return <></>;
+  const login = useAppSelector((state: RootState) => state.LoginStatus.isLogin)
+  if (!login) return <></>
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: ColorSystem.primary[700],
+          backgroundColor: '#fff',
           borderTopRightRadius: 20,
           borderTopLeftRadius: 20,
         }, // Background color
-        tabBarActiveTintColor: ColorSystem.neutral[100], // Active tab label color
-        tabBarInactiveTintColor: ColorSystem.neutral[400], // Inactive tab label color
+        tabBarActiveTintColor: ColorSystem.primary[500], // Active tab label color
+        tabBarInactiveTintColor: ColorSystem.neutral[300], // Inactive tab label color
       }}
     >
       <Tab.Screen
-        name="Tổng quan"
+        name="Home"
         component={HomeScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => (
-            <SimpleLineIcons
-              name="home"
-              size={props.size}
-              color={props.color}
-            />
-          ),
+          tabBarIcon: (props) => <MaterialIcons name="home" size={props.size} color={props.color} />,
         }}
       />
       <Tab.Screen
-        name="Ví của bạn"
-        component={WalletScreen}
+        name="Feeds"
+        component={FeedsScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => (
-            <MaterialIcons
-              name="wallet"
-              size={props.size}
-              color={props.color}
-            />
-          ),
+          tabBarIcon: (props) => <FontAwesome name="newspaper-o" size={props.size} color={props.color} />,
         }}
       />
       <Tab.Screen
-        name="Kế hoạch"
-        component={GoalScreen}
+        name="Clinic"
+        component={ClinicsScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => (
-            <MaterialCommunityIcons
-              name="piggy-bank-outline"
-              size={props.size}
-              color={props.color}
-            />
-          ),
+          tabBarIcon: (props) => <FontAwesome name="stethoscope" size={props.size} color={props.color} />,
         }}
       />
       <Tab.Screen
-        name="Thống kê"
-        component={StatisticScreen}
+        name="Schedule"
+        component={ScheduleScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => (
-            <MaterialIcons
-              name="auto-graph"
-              size={props.size}
-              color={props.color}
-            />
-          ),
+          tabBarIcon: (props) => <AntDesign name="calendar" size={props.size} color={props.color} />,
         }}
       />
       <Tab.Screen
-        name="Khác"
-        component={OtherScreen}
+        name="Profile"
+        component={ProfileScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => (
-            <MaterialCommunityIcons
-              name="menu"
-              size={props.size}
-              color={props.color}
-            />
-          ),
+          tabBarIcon: (props) => <FontAwesome name="user-o" size={props.size} color={props.color} />,
         }}
       />
     </Tab.Navigator>
-  );
+  )
 }

@@ -8,14 +8,11 @@ import HomeScreen from '../screens/Home/HomeScreen'
 import LogoOnboarding from '../screens/Onboarding/LogoOnboarding'
 import BottomBarNavigation from './BottomBarNavigation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Provider, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from '../store/index'
 import { MenuProvider } from 'react-native-popup-menu'
-import AllTransaction from '../screens/Home/AllTransaction'
 import LoginScreen from '../screens/Auth/LoginScreen'
 import RegisterScreen from '../screens/Auth/RegisterScreen'
-import AllBudget from '../screens/Home/AllBudget'
-import AllGoal from '../screens/Goal/AllGoal'
 const Stack = createStackNavigator()
 
 const AppMenuProvider = () => {
@@ -58,32 +55,18 @@ const AppMenuProvider = () => {
       </Stack.Navigator>
     </NavigationContainer>
   )
-  //   const loginScreen = (
-  //     <NavigationContainer>
-  //       <Stack.Navigator screenOptions={{ headerShown: true }}>
-  //         <Stack.Screen name="LoginScreen" component={LoginScreen} />
-  //       </Stack.Navigator>
-  //     </NavigationContainer>
-  //   );
+
   const mainScreen = (
     <>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={BottomBarNavigation} />
-          <Stack.Screen name="AllTransaction" component={AllTransaction} options={{ headerShown: true }} />
-          <Stack.Screen name="All Budgets" component={AllBudget} options={{ headerShown: true }} />
-          <Stack.Screen name="All Goals" component={AllGoal} options={{ headerShown: true }} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
   )
 
-  return (
-    <MenuProvider>
-      {/* {isAppFirstLaunched ? onBoarding : !isLogin ? loginScreen : mainScreen} */}
-      {!isLogin ? onBoarding : mainScreen}
-    </MenuProvider>
-  )
+  return <MenuProvider>{!isLogin ? onBoarding : mainScreen}</MenuProvider>
 }
 
 export default AppMenuProvider
