@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   fixedHeaderContainer: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 85,
+    paddingTop: 0.07 * Dimensions.get('window').width,
     paddingHorizontal: 35,
   },
   scrollView: {
