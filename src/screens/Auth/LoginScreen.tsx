@@ -49,7 +49,7 @@ const LoginScreen = ({ navigation }: any) => {
     }
 
     try {
-      console.log('login')
+      console.log('User logged in!')
       const authInfo = await login(formData).unwrap()
       console.log(authInfo)
       dispatch(

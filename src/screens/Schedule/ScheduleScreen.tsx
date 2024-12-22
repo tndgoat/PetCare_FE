@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { SafeAreaView, View, ScrollView, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Entypo from '@expo/vector-icons/Entypo'
-import ScheduleModal from './components/ScheduleModal'
+import ScheduleModal from '../../components/Schedule/ScheduleModal'
 
 const ScheduleScreen = () => {
   const [filter, setFilter] = useState('All')
