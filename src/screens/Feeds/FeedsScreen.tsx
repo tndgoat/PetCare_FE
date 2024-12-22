@@ -216,15 +216,16 @@ const FeedsScreen: React.FC = () => {
         <Text style={styles.infoLabel}>Description:</Text>
         <Text style={styles.infoText}>{post.lostPetInfo?.description}</Text>
 
+        <Text style={styles.infoLabel}>Phone number:</Text>
+        <Text style={styles.infoText}>{post.lostPetInfo?.contactNumber}</Text>
+
         <Text style={styles.infoLabel}>Lost location:</Text>
         <Text style={styles.infoText}>{post.lostPetInfo?.location}</Text>
       </View>
 
       <View style={styles.lostPetActions}>
         <TouchableOpacity style={styles.phoneButton}>
-          <Text style={styles.phoneButtonText}>
-            📞 {post.lostPetInfo?.contactNumber}
-          </Text>
+          <Text style={styles.phoneButtonText}>📞</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.connectButton}>
           <Text style={styles.connectButtonText}>Connect</Text>
@@ -236,7 +237,7 @@ const FeedsScreen: React.FC = () => {
     </View>
   );
 
-  const renderPost = ({ item }: { item: Post }) => {
+  const renderPost = ({ item }: any) => {
     return item.type === "lost"
       ? renderLostPetPost(item)
       : renderRegularPost(item);

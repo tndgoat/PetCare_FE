@@ -23,7 +23,7 @@ const App = () => {
     //   <AppMenuProvider></AppMenuProvider>
     //   <Toast />
     // </Provider>
-    <ProfileScreen />
+    <HomeScreen />
   );
 };
 

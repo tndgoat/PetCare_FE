@@ -188,7 +188,7 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
   petName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "600",
     color: "#FF69B4",
     marginBottom: 4,
