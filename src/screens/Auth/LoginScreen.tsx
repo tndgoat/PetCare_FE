@@ -91,7 +91,7 @@ const LoginScreen = ({ navigation }: any) => {
               <View style={styles.group}>
                 <Icon style={styles.icon} name="email" color="#DB3169" />
                 <TextInput style={styles.input} autoCapitalize="none" placeholder="Enter your email" onChangeText={(value) => setEmail(value)}></TextInput>
-                {!checkMail && <Text style={{ color: 'red' }}>The email you entered is invalid!</Text>}
+                {!checkMail && <Text style={{ color: 'red' }}>Email is not in correct format!</Text>}
               </View>
               <View style={styles.group}>
                 <Icon style={styles.icon} name="locked" color="#DB3169" />

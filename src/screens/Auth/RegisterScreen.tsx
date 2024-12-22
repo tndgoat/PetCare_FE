@@ -73,7 +73,7 @@ const RegisterScreen = ({ navigation }: any) => {
     } else {
       setCheckMail(true)
     }
-    formData.password === '' ? setErrorPass('Mật khẩu không được để trống') : setErrorPass('')
+    formData.password === '' ? setErrorPass('Please enter your password!') : setErrorPass('')
 
     if (name === '' || checkMail === false || formData.email === '' || formData.password === '') {
       return
@@ -129,12 +129,12 @@ const RegisterScreen = ({ navigation }: any) => {
               <View style={styles.group}>
                 <Icon style={styles.icon} name="person" color="#DB3169" />
                 <TextInput style={styles.input} autoCapitalize="none" placeholder="Enter your name" onChangeText={(value) => setName(value)}></TextInput>
-                {!checkName && <Text style={{ color: 'red' }}>Tên người dùng không được để trống</Text>}
+                {!checkName && <Text style={{ color: 'red' }}>Please enter your name!</Text>}
               </View>
               <View style={styles.group}>
                 <Icon style={styles.icon} name="email" color="#DB3169" />
                 <TextInput style={styles.input} autoCapitalize="none" placeholder="Enter your email" onChangeText={(value) => setEmail(value)}></TextInput>
-                {!checkMail && <Text style={{ color: 'red' }}>Email không đúng định dạng</Text>}
+                {!checkMail && <Text style={{ color: 'red' }}>Email is not in correct format!</Text>}
               </View>
               <View style={styles.group}>
                 <Icon style={styles.icon} name="locked" color="#DB3169" />
