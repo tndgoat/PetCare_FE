@@ -5,14 +5,15 @@
   "scripts": {
     "ts:check": "tsc",
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "devtools": "react-devtools"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
@@ -36,6 +37,7 @@
     "react-native-currency-input": "^1.1.1",
     "react-native-date-picker": "^5.0.8",
     "react-native-dropdown-select-list": "^2.0.5",
+    "react-native-element-dropdown": "^2.12.2",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-icon-picker": "^1.0.6",
