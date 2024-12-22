@@ -10,6 +10,7 @@ import ScheduleScreen from "./src/screens/Schedule/ScheduleScreen";
 import PetsScreen from "./src/screens/Pets/PetsScreen";
 import FeedsScreen from "./src/screens/Feeds/FeedsScreen";
 import HomeScreen from "./src/screens/Home/HomeScreen";
+import ProfileScreen from "./src/screens/Profile/ProfileScreen";
 
 const Stack = createStackNavigator();
 Sentry.init({
@@ -22,7 +23,7 @@ const App = () => {
     //   <AppMenuProvider></AppMenuProvider>
     //   <Toast />
     // </Provider>
-    <HomeScreen />
+    <ProfileScreen />
   );
 };
 
