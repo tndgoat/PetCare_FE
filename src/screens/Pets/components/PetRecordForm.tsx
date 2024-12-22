@@ -55,7 +55,7 @@ const PetRecordForm: React.FC<PetRecordFormProps> = ({
         <View style={styles.content}>
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose} style={styles.backButton}>
-              <Text style={styles.backButtonText}>{"<"}</Text>
+              <Text style={styles.backButtonText}>Back</Text>
             </TouchableOpacity>
             <Text style={styles.title}>My Pets</Text>
             <TouchableOpacity onPress={handleSubmit} style={styles.addButton}>
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: 14,
     color: "#000",
   },
   title: {
