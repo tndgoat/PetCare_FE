@@ -1,24 +1,25 @@
-import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import HomeScreen from '../screens/Home/HomeScreen'
-import FeedsScreen from '../screens/Feeds/FeedsScreen'
-import ClinicsScreen from '../screens/Clinic/ClinicScreen'
-import ScheduleScreen from '../screens/Schedule/ScheduleScreen'
-import ProfileScreen from '../screens/Profile/ProfileScreen'
-import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons'
-import ColorSystem from '../color/ColorSystem'
-import { useAppSelector } from '../hooks/redux'
-import { RootState } from '../store'
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import HomeScreen from "../screens/Home/HomeScreen";
+import FeedsScreen from "../screens/Feeds/FeedsScreen";
+import ClinicsScreen from "../screens/Clinic/ClinicScreen";
+import ScheduleScreen from "../screens/Schedule/ScheduleScreen";
+import ProfileScreen from "../screens/Profile/ProfileScreen";
+import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import ColorSystem from "../color/ColorSystem";
+import { useAppSelector } from "../hooks/redux";
+import { RootState } from "../store";
+import PetsScreen from "../screens/Pets/PetsScreen";
 
-const Tab = createBottomTabNavigator()
+const Tab = createBottomTabNavigator();
 export default function BottomBarNavigation() {
-  const login = useAppSelector((state: RootState) => state.LoginStatus.isLogin)
-  if (!login) return <></>
+  const login = useAppSelector((state: RootState) => state.LoginStatus.isLogin);
+  if (!login) return <></>;
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           borderTopRightRadius: 20,
           borderTopLeftRadius: 20,
         }, // Background color
@@ -31,7 +32,19 @@ export default function BottomBarNavigation() {
         component={HomeScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => <MaterialIcons name="home" size={props.size} color={props.color} />,
+          tabBarIcon: (props) => (
+            <MaterialIcons name="home" size={props.size} color={props.color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Pets"
+        component={PetsScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: (props) => (
+            <MaterialIcons name="pets" size={props.size} color={props.color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -39,7 +52,13 @@ export default function BottomBarNavigation() {
         component={FeedsScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => <FontAwesome name="newspaper-o" size={props.size} color={props.color} />,
+          tabBarIcon: (props) => (
+            <FontAwesome
+              name="newspaper-o"
+              size={props.size}
+              color={props.color}
+            />
+          ),
         }}
       />
       <Tab.Screen
@@ -47,7 +66,13 @@ export default function BottomBarNavigation() {
         component={ClinicsScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => <FontAwesome name="stethoscope" size={props.size} color={props.color} />,
+          tabBarIcon: (props) => (
+            <FontAwesome
+              name="stethoscope"
+              size={props.size}
+              color={props.color}
+            />
+          ),
         }}
       />
       <Tab.Screen
@@ -55,7 +80,9 @@ export default function BottomBarNavigation() {
         component={ScheduleScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => <AntDesign name="calendar" size={props.size} color={props.color} />,
+          tabBarIcon: (props) => (
+            <AntDesign name="calendar" size={props.size} color={props.color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -63,9 +90,11 @@ export default function BottomBarNavigation() {
         component={ProfileScreen}
         options={{
           headerShown: false,
-          tabBarIcon: (props) => <FontAwesome name="user-o" size={props.size} color={props.color} />,
+          tabBarIcon: (props) => (
+            <FontAwesome name="user-o" size={props.size} color={props.color} />
+          ),
         }}
       />
     </Tab.Navigator>
-  )
+  );
 }

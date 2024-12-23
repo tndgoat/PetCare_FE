@@ -148,7 +148,9 @@ const AddPetScreen: React.FC = () => {
           ) : (
             <View style={styles.imagePlaceholder}>
               <Image
-                source={require("../../../assets/image-placeholder.jpeg")}
+                source={{
+                  uri: "https://cpworldgroup.com/wp-content/uploads/2021/01/placeholder.png",
+                }}
                 style={styles.imagePlaceholder}
               />
             </View>
