@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   petImage: {
     width: 80,
     height: 80,
-    borderRadius: 8,
+    borderRadius: 100,
   },
   petInfo: {
     flex: 1,
