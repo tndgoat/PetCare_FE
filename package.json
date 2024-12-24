@@ -11,6 +11,7 @@
     "devtools": "react-devtools"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
     "@hookform/resolvers": "^3.9.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "^8.2.0",
@@ -26,6 +27,7 @@
     "date-fns": "^3.6.0",
     "expo": "^52.0.19",
     "expo-checkbox": "~4.0.0",
+    "expo-linear-gradient": "^14.0.1",
     "expo-status-bar": "~2.0.0",
     "expo-updates": "~0.26.10",
     "moment": "^2.30.1",

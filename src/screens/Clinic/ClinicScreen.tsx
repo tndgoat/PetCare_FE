@@ -1,12 +1,32 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
+import ClinicHome from "./ClinicHome";
+import ClinicDetail from "./ClinicDetail";
+import AppointmentBooking from "./AppointmentBooking";
 
-const ClinicsScreen = () => {
+const Stack = createStackNavigator();
+
+const ClinicScreen: React.FC = () => {
   return (
-    <View>
-      <Text>ClinicsScreen</Text>
-    </View>
-  )
-}
+    <Stack.Navigator initialRouteName="PetListScreen">
+      <Stack.Screen
+        name="ClinicHome"
+        component={ClinicHome}
+        options={{ title: "Clinic Home" }}
+      />
+      <Stack.Screen
+        name="ClinicDetail"
+        component={ClinicDetail}
+        options={{ title: "Clinic Detail" }}
+      />
+      <Stack.Screen
+        name="ClinicAppoinment"
+        component={AppointmentBooking}
+        options={{ title: "Clinic Appoinment" }}
+      />
+    </Stack.Navigator>
+  );
+};
 
-export default ClinicsScreen
+export default ClinicScreen;
