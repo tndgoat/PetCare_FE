@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
   },
   backButton: {
+    fontSize: 16,
     padding: 8,
   },
   backButtonText: {

@@ -1,282 +1,334 @@
-import React, { useState } from 'react'
-import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, FlatList } from 'react-native'
-import CommentsModal from '../../components/Feeds/CommentsModal'
-import CreatePostModal from '../../components/Feeds/CreatePostModal'
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommentsModal from "../../components/Feeds/CommentsModal";
+import CreatePostModal from "../../components/Feeds/CreatePostModal";
+
 interface Post {
-  id: string
-  type: 'regular' | 'lost'
-  user: {
-    name: string
-    avatar: string
-  }
-  timeAgo: string
-  content?: string
-  image: string
-  likes?: number
-  comments?: number
-  lostPetInfo?: {
-    description: string
-    lostDate: string
-    location: string
-    contactNumber: string
-  }
+  _id: string;
+  type: string;
+  content: string;
+  title: string;
+  description: string;
+  image: string;
+  location?: string;
+  fbLink?: string;
+  phoneNo?: string;
+  likes: number;
+  comments: number;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const posts = [
-  {
-    id: '1',
-    type: 'regular',
-    category: 'moments',
-    user: {
-      name: 'Nathan-nguyen',
-      avatar: 'https://static.vecteezy.com/system/resources/thumbnails/019/896/012/small_2x/female-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png',
-    },
-    timeAgo: '3d ago',
-    content: 'PetCare, accompanying you in a world of world of healthy pets',
-    image: 'https://media.istockphoto.com/id/1370365587/photo/big-eyed-naughty-obese-cat-looking-at-the-target.webp?a=1&b=1&s=612x612&w=0&k=20&c=-DLMf4LkybC-FODZc7mG4DZwPQLLekw1gACS3Zb4DeY=',
-    likes: 12,
-    comments: 3,
-  },
-  {
-    id: '2',
-    type: 'regular',
-    category: 'knowledge',
-    user: {
-      name: 'Nathan-nguyen',
-      avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT05xWs0JhUIni-FTckotyQExS9Na-OEz_SIm1EWLH5IPfCttMOWNDyc465PYSGtkWKxls&usqp=CAU',
-    },
-    timeAgo: '3d ago',
-    content: 'PetCare, accompanying you in a world of world of healthy pets',
-    image: 'https://images.unsplash.com/photo-1494256997604-768d1f608cac?q=80&w=2129&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    likes: 8,
-    comments: 2,
-  },
-  {
-    id: '3',
-    type: 'lost',
-    category: 'lost_pet',
-    user: {
-      name: 'Nathan-nguyen',
-      avatar: 'https://via.placeholder.com/40',
-    },
-    timeAgo: '3d ago',
-    image: 'https://images.ctfassets.net/gynu23gx3hnw/7spXkQpjj64edprZ7XP0PR/d268438fb78b2313b08ce104553ac062/Lost_Dog_Poster_for_Flaco.jpeg?w=750&fm=webp',
-    lostPetInfo: {
-      description: "I'm looking for a cat like the one in the photo, which was lost on 3/5/2024",
-      lostDate: '3/5/2024',
-      location: 'Bach Khoa University, Di An, Binh Duong',
-      contactNumber: '0444422222',
-    },
-  },
-]
-
-type TabType = 'all_news' | 'moments' | 'knowledge' | 'lost_pet'
+type TabType = "all_news" | "moment" | "knowledge" | "lostpet";
 
 const tabs: { id: TabType; label: string }[] = [
-  { id: 'all_news', label: 'All news' },
-  { id: 'moments', label: 'Moments' },
-  { id: 'knowledge', label: 'Knowledge' },
-  { id: 'lost_pet', label: 'Lost pet' },
-]
+  { id: "all_news", label: "All news" },
+  { id: "moment", label: "Moments" },
+  { id: "knowledge", label: "Knowledge" },
+  { id: "lostpet", label: "Lost pet" },
+];
+
+const API_URL = "https://petcare-sdbq.onrender.com/api/v1";
 
 const FeedsScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('all_news')
-  const [isCommentsVisible, setIsCommentsVisible] = useState(false)
-  const [isCreatePostVisible, setIsCreatePostVisible] = useState(false)
+  const [activeTab, setActiveTab] = useState<TabType>("all_news");
+  const [isCommentsVisible, setIsCommentsVisible] = useState(false);
+  const [isCreatePostVisible, setIsCreatePostVisible] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
-  const handleCreatePost = (postData: any) => {
-    console.log('New post:', postData)
-    // Handle post creation
-  }
+  const fetchPosts = async () => {
+    try {
+      setIsLoading(true);
+      const token = await AsyncStorage.getItem("access_token");
 
-  const filteredPosts = posts.filter((post) => {
-    if (activeTab === 'all_news') return true
-    return post.category === activeTab
-  })
+      let url = `${API_URL}/posts`;
+      if (activeTab !== "all_news") {
+        const type = activeTab === "moment" ? "moment" : activeTab;
+        url += `?type=${type}`;
+      }
 
-  const getPlaceholderText = () => {
-    switch (activeTab) {
-      case 'lost_pet':
-        return 'I hope you can find your pet ...'
-      case 'knowledge':
-        return 'Share your pet care knowledge ...'
-      case 'moments':
-        return 'Share your moments ...'
-      default:
-        return 'What is going on?'
+      const response = await axios.get(url, {
+        headers: {
+          Accept: "*/*",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setPosts(response.data);
+
+      console.log(response.data.length);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      Alert.alert("Error", "Failed to load posts");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  const renderTabs = () => (
-    <View style={styles.tabs}>
-      {tabs.map((tab) => (
-        <TouchableOpacity key={tab.id} onPress={() => handleTabPress(tab.id)} style={styles.tabButton}>
-          <Text style={[styles.tabText, activeTab === tab.id && styles.activeTab]}>{tab.label}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  )
+  useEffect(() => {
+    fetchPosts();
+  }, [activeTab]);
 
-  const handleTabPress = (tabId: TabType) => {
-    setActiveTab(tabId)
-  }
+  const handleCreatePost = async (postData: any) => {
+    try {
+      await fetchPosts(); // Refresh posts after creating new one
+      setIsCreatePostVisible(false);
+    } catch (error) {
+      console.error("Error refreshing posts:", error);
+      Alert.alert("Error", "Failed to refresh posts");
+    }
+  };
 
-  const handleLike = (postId: string) => {
-    console.log('Liked post:', postId)
-  }
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  const handleComment = (postId: string) => {
-    console.log('Comment on post:', postId)
-  }
-
-  const handleShare = (postId: string) => {
-    console.log('Share post:', postId)
-  }
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
 
   const renderRegularPost = (post: Post) => (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: post.user.avatar }} style={styles.avatar} />
+          <Image
+            source={{
+              uri: "https://static.vecteezy.com/system/resources/thumbnails/019/896/012/small_2x/female-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png",
+            }}
+            style={styles.avatar}
+          />
           <View>
-            <Text style={styles.userName}>{post.user.name}</Text>
-            <Text style={styles.timeAgo}>{post.timeAgo}</Text>
+            <Text style={styles.userName}>User</Text>
+            <Text style={styles.timeAgo}>{formatTimeAgo(post.createdAt)}</Text>
           </View>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.closeButton}>✕</Text>
-        </TouchableOpacity>
+        <View>
+          <Text style={styles.postType}>{post.type}</Text>
+        </View>
       </View>
       <Text style={styles.postContent}>{post.content}</Text>
-      <Image source={{ uri: post.image }} style={styles.postImage} />
+      {post.image && (
+        <Image source={{ uri: post.image }} style={styles.postImage} />
+      )}
       <View style={styles.postActions}>
         <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionText}>{post.likes} like</Text>
+          <Text style={styles.actionText}>{post.likes} likes</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={() => setIsCommentsVisible(true)}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => {
+            setSelectedPostId(post._id);
+            setIsCommentsVisible(true);
+          }}
+        >
           <Text style={styles.actionText}>{post.comments} comments</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <Text style={styles.actionText}>Share</Text>
         </TouchableOpacity>
       </View>
-
-      <CommentsModal isVisible={isCommentsVisible} onClose={() => setIsCommentsVisible(false)} postId={post.id} />
     </View>
-  )
+  );
 
   const renderLostPetPost = (post: Post) => (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: post.user.avatar }} style={styles.avatar} />
+          <Image
+            source={{
+              uri: "https://static.vecteezy.com/system/resources/thumbnails/019/896/012/small_2x/female-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png",
+            }}
+            style={styles.avatar}
+          />
           <View>
-            <Text style={styles.userName}>{post.user.name}</Text>
-            <Text style={styles.timeAgo}>{post.timeAgo}</Text>
+            <Text style={styles.userName}>User</Text>
+            <Text style={styles.timeAgo}>{formatTimeAgo(post.createdAt)}</Text>
           </View>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.closeButton}>✕</Text>
-        </TouchableOpacity>
       </View>
 
-      <Image source={{ uri: post.image }} style={styles.postImage} />
+      {post.image && (
+        <Image source={{ uri: post.image }} style={styles.postImage} />
+      )}
 
       <View style={styles.lostPetInfo}>
         <Text style={styles.infoLabel}>Description:</Text>
-        <Text style={styles.infoText}>{post.lostPetInfo?.description}</Text>
+        <Text style={styles.infoText}>{post.description}</Text>
 
-        <Text style={styles.infoLabel}>Phone number:</Text>
-        <Text style={styles.infoText}>{post.lostPetInfo?.contactNumber}</Text>
+        {post.phoneNo && (
+          <>
+            <Text style={styles.infoLabel}>Phone number:</Text>
+            <Text style={styles.infoText}>{post.phoneNo}</Text>
+          </>
+        )}
 
-        <Text style={styles.infoLabel}>Lost location:</Text>
-        <Text style={styles.infoText}>{post.lostPetInfo?.location}</Text>
+        {post.location && (
+          <>
+            <Text style={styles.infoLabel}>Lost location:</Text>
+            <Text style={styles.infoText}>{post.location}</Text>
+          </>
+        )}
       </View>
 
       <View style={styles.lostPetActions}>
-        <TouchableOpacity style={styles.phoneButton}>
-          <Text style={styles.phoneButtonText}>📞</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.connectButton}>
-          <Text style={styles.connectButtonText}>Connect</Text>
-        </TouchableOpacity>
+        {post.phoneNo && (
+          <TouchableOpacity style={styles.phoneButton}>
+            <Text style={styles.phoneButtonText}>📞</Text>
+          </TouchableOpacity>
+        )}
+        {post.fbLink && (
+          <TouchableOpacity style={styles.connectButton}>
+            <Text style={styles.connectButtonText}>Connect</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={styles.shareButton}>
           <Text style={styles.shareButtonText}>Share</Text>
         </TouchableOpacity>
       </View>
     </View>
-  )
+  );
 
-  const renderPost = ({ item }: any) => {
-    return item.type === 'lost' ? renderLostPetPost(item) : renderRegularPost(item)
-  }
+  const renderPost = ({ item }: { item: Post }) => {
+    return item.type === "lostpet"
+      ? renderLostPetPost(item)
+      : renderRegularPost(item);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {renderTabs()}
+      <View style={styles.tabs}>
+        {tabs.map((tab) => (
+          <TouchableOpacity
+            key={tab.id}
+            onPress={() => setActiveTab(tab.id)}
+            style={styles.tabButton}
+          >
+            <Text
+              style={[styles.tabText, activeTab === tab.id && styles.activeTab]}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-      <View style={styles.searchContainer}>
+      <TouchableOpacity
+        style={styles.searchContainer}
+        onPress={() => setIsCreatePostVisible(true)}
+      >
         <TextInput
           style={styles.searchInput}
-          placeholder={getPlaceholderText()}
+          placeholder={`Share your ${activeTab.replace("_", " ")}...`}
           placeholderTextColor="#666"
-          onPress={() => {
-            setIsCreatePostVisible(true)
-          }}
+          editable={false}
         />
         <TouchableOpacity
           style={styles.imageButton}
-          onPress={() => {
-            setIsCreatePostVisible(true)
-          }}
+          onPress={() => setIsCreatePostVisible(true)}
         >
           <Text>🖼️</Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
 
-      <FlatList data={filteredPosts} renderItem={renderPost} keyExtractor={(item) => item.id} showsVerticalScrollIndicator={false} />
+      {isLoading ? (
+        <ActivityIndicator style={styles.loader} color="#ff4081" />
+      ) : (
+        <FlatList
+          data={posts.reverse()}
+          renderItem={renderPost}
+          keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
+          onRefresh={fetchPosts}
+          refreshing={isLoading}
+        />
+      )}
 
-      <CreatePostModal isVisible={isCreatePostVisible} onClose={() => setIsCreatePostVisible(false)} onSubmit={handleCreatePost} />
+      <CreatePostModal
+        isVisible={isCreatePostVisible}
+        onClose={() => setIsCreatePostVisible(false)}
+        onSubmit={handleCreatePost}
+      />
+
+      {selectedPostId && (
+        <CommentsModal
+          isVisible={isCommentsVisible}
+          onClose={() => {
+            setIsCommentsVisible(false);
+            setSelectedPostId(null);
+          }}
+          postId={selectedPostId}
+        />
+      )}
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   tabs: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     marginTop: 10,
-    width: '100%',
+    width: "100%",
   },
   tabButton: {
-    width: '25%',
+    width: "25%",
+  },
+  postType: {
+    color: "#666",
+    textAlign: "center",
+    textTransform: "capitalize",
   },
   tabText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
-    textAlign: 'center',
-    width: '100%',
+    textAlign: "center",
+    width: "100%",
   },
   activeTab: {
-    color: '#ff4081',
-    fontWeight: '600',
+    color: "#ff4081",
+    fontWeight: "600",
   },
   searchContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
   searchInput: {
     flex: 1,
     height: 40,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderRadius: 20,
     paddingHorizontal: 16,
     marginRight: 12,
@@ -284,23 +336,23 @@ const styles = StyleSheet.create({
   imageButton: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   postContainer: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
   postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 12,
   },
   userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   avatar: {
     width: 40,
@@ -310,46 +362,46 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   timeAgo: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   closeButton: {
     fontSize: 18,
-    color: '#666',
+    color: "#666",
   },
   postContent: {
     fontSize: 14,
     marginBottom: 12,
   },
   postImage: {
-    width: '100%',
+    width: "100%",
     height: 200,
     borderRadius: 8,
     marginBottom: 12,
   },
   postActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 8,
   },
   actionText: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
-    backgroundColor: '#fff',
+    borderTopColor: "#eee",
+    backgroundColor: "#fff",
   },
   navButton: {
     padding: 8,
@@ -359,47 +411,48 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   infoText: {
     fontSize: 14,
-    color: '#333',
+    color: "#333",
     marginBottom: 8,
+    paddingLeft: 10,
   },
   lostPetActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   connectButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   connectButtonText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
   },
   phoneButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   phoneButtonText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
   },
   shareButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   shareButtonText: {
-    color: '#666',
+    color: "#666",
     fontSize: 14,
   },
   activeNavButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     borderRadius: 4,
   },
-})
+});
 
-export default FeedsScreen
+export default FeedsScreen;

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import PetRecordForm from "../../components/Pets/PetRecordForm";
 import { PetProps } from "./PetListScreen";
-import { formatDate } from "../../helper/formatDate";
+import { calculateMonthsPassed, formatDate } from "../../helper/formatDate";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -193,7 +193,9 @@ const PetDetailScreen: React.FC = ({ route }: any) => {
           <Text style={styles.petName}>
             {pet.name} {pet.gender === "male" ? "♂️" : "♀️"}
           </Text>
-          <Text style={styles.petAge}>{formatDate(pet.birthday)}</Text>
+          <Text style={styles.petAge}>
+            {calculateMonthsPassed(pet.birthday)} months
+          </Text>
         </View>
         {renderTabs()}
         {activeTab === "Essentials" && renderInfo()}
@@ -232,6 +234,8 @@ export const styles = StyleSheet.create({
   },
   petInfo: {
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   petName: {
     fontSize: 22,
@@ -242,6 +246,7 @@ export const styles = StyleSheet.create({
   petAge: {
     fontSize: 16,
     color: "#666",
+    marginLeft: 10,
   },
   tabContainer: {
     flexDirection: "row",

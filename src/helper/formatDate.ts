@@ -1,4 +1,9 @@
-import { format, formatDistanceToNow } from "date-fns";
+import {
+  differenceInMonths,
+  format,
+  formatDistanceToNow,
+  parseISO,
+} from "date-fns";
 
 /**
  * Format a date string or Date object to a specified format
@@ -15,6 +20,18 @@ export const formatDate = (
   } catch (error) {
     console.error("Invalid date format:", error);
     return "";
+  }
+};
+
+export const calculateMonthsPassed = (date: string | Date): number => {
+  try {
+    // Chuyển đổi date thành đối tượng Date nếu nó là một chuỗi
+    const inputDate = typeof date === "string" ? parseISO(date) : date;
+    const currentDate = new Date();
+    return differenceInMonths(currentDate, inputDate);
+  } catch (error) {
+    console.error("Invalid date format:", error);
+    return 0; // Trả về 0 nếu có lỗi
   }
 };
 

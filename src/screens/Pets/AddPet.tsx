@@ -281,6 +281,7 @@ const PetForm: React.FC<PetFormProps> = ({
             />
           ) : (
             <View style={styles.imagePlaceholder}>
+              <Icon name="image-outline" size={40} color="#666" />
               <Text>Tap to select image</Text>
             </View>
           )}
@@ -515,7 +516,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   cameraButton: {
-    padding: 15,
+    padding: 12,
     backgroundColor: "white",
     borderRadius: 100,
     shadowColor: "#000",
