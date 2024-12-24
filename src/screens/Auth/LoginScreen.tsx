@@ -7,6 +7,7 @@ import ColorSystem from '../../color/ColorSystem'
 import { stateIsLogin } from '../../store/reducers/login.reducer'
 import { usePostLoginMutation } from '../../services/auth'
 import { AntDesign } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const LoginScreen = ({ navigation }: any) => {
   const [isCheck, setIsCheck] = useState(false)
@@ -16,44 +17,42 @@ const LoginScreen = ({ navigation }: any) => {
   const [errorPass, setErrorPass] = useState('')
   const dispatch = useDispatch()
   let [login, { isLoading }] = usePostLoginMutation()
+
   const onSubmit = async () => {
     let formData = {
       email: email,
       password: password,
     }
-    console.log(formData)
-    let regexEmail = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
-    console.log(regexEmail.test(email.toLowerCase()))
+
+    const regexEmail = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 
     if (!regexEmail.test(email.toLowerCase())) {
       setCheckMail(false)
       return
     }
 
-    if (!regexEmail.test(email.toLowerCase())) {
-      setCheckMail(false)
-    } else {
-      setCheckMail(true)
-    }
-    formData.password === '' ? setErrorPass('Password cannot be empty') : setErrorPass('')
-    console.log(checkMail)
-
-    if (checkMail === false || formData.email === '' || formData.password === '') {
+    if (!email || !password) {
+      setErrorPass('Password cannot be empty')
       return
     }
 
+    setErrorPass('')
     try {
-      console.log('User logged in!')
       const authInfo = await login(formData).unwrap()
-      console.log(authInfo)
+      const accessToken = authInfo.result.access_token
+
       dispatch(
         stateIsLogin({
           isLogin: true,
-          access_token: authInfo.access_token,
+          access_token: accessToken,
         })
       )
-    } catch (error) {
-      Alert.alert('Login failed', error.data.message)
+
+      await AsyncStorage.setItem('access_token', accessToken)
+
+      console.log(authInfo)
+    } catch (error: any) {
+      Alert.alert('Login failed', error?.data?.message || 'Something went wrong')
       console.log(error)
     }
   }

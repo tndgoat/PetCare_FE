@@ -5,6 +5,7 @@ import LogoutModal from '../../components/Profile/LogoutModal'
 import { useAppDispatch } from '../../hooks/redux'
 import { logOut } from '../../store/reducers/login.reducer'
 import { useNavigation } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface MenuItem {
   id: string
@@ -57,11 +58,14 @@ const ProfileScreen = () => {
   ]
 
   const dispatch = useAppDispatch()
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log('User signed out!')
     setShowLogoutModal(false)
-    dispatch(logOut())
-    navigation.navigate('LoginScreen')
+
+    dispatch(logOut(''))
+
+    await AsyncStorage.removeItem('access_token')
+    await AsyncStorage.setItem('isLogin', 'false')
   }
 
   return (

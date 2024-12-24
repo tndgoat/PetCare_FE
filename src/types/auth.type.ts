@@ -1,5 +1,7 @@
 export type AuthInfo = {
-  access_token: string
+  result: {
+    access_token: string
+  }
 }
 
 export type SignInDto = {
