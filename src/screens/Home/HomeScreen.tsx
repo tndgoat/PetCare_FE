@@ -149,9 +149,7 @@ const HomeScreen = ({ refetch }: any) => {
               <TouchableOpacity
                 key={pet._id}
                 style={styles.petCard}
-                onPress={() =>
-                  navigation.navigate("PetProfileScreen", { petData: pet })
-                }
+                onPress={() => navigation.navigate("Pets", { petData: pet })}
               >
                 <Image
                   source={{
