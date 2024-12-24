@@ -67,89 +67,92 @@ const OnboardingScreen = ({ navigation }) => {
 
   const Footer = () => {
     return (
-      <View
-        style={{
-          height: height * 0.25,
-          justifyContent: 'space-between',
-          paddingHorizontal: 20,
-        }}
-      >
-        {/* Indicator container */}
+      <>
+        <StatusBar barStyle={'dark-content'} backgroundColor={'#fff'}></StatusBar>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 20,
+            height: height * 0.25,
+            justifyContent: 'space-between',
+            paddingHorizontal: 20,
           }}
         >
-          {/* Render indicator */}
-          {slides.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.indicator,
-                currentSlideIndex == index && {
-                  backgroundColor: COLORS.white,
-                  width: 25,
-                },
-              ]}
-            />
-          ))}
-        </View>
+          {/* Indicator container */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginTop: 20,
+            }}
+          >
+            {/* Render indicator */}
+            {slides.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.indicator,
+                  currentSlideIndex == index && {
+                    backgroundColor: COLORS.white,
+                    width: 25,
+                  },
+                ]}
+              />
+            ))}
+          </View>
 
-        {/* Render buttons */}
-        <View style={{ marginBottom: 20 }}>
-          {currentSlideIndex == slides.length - 1 ? (
-            <View style={{ height: 50 }}>
-              <TouchableOpacity style={styles.btn} onPress={() => navigation.replace('LandingScreen')}>
-                <Text style={{ color: '#DB3169', fontWeight: 'bold', fontSize: 15 }}>GET STARTED</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={[
-                  styles.btn,
-                  {
-                    borderColor: COLORS.white,
-                    borderWidth: 1,
-                    backgroundColor: 'transparent',
-                  },
-                ]}
-                onPress={skip}
-              >
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 15,
-                    color: '#DB3169',
-                  }}
+          {/* Render buttons */}
+          <View style={{ marginBottom: 20 }}>
+            {currentSlideIndex == slides.length - 1 ? (
+              <View style={{ height: 50 }}>
+                <TouchableOpacity style={styles.btn} onPress={() => navigation.replace('LandingScreen')}>
+                  <Text style={{ color: '#DB3169', fontWeight: 'bold', fontSize: 15 }}>GET STARTED</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={[
+                    styles.btn,
+                    {
+                      borderColor: COLORS.white,
+                      borderWidth: 1,
+                      backgroundColor: 'transparent',
+                    },
+                  ]}
+                  onPress={skip}
                 >
-                  SKIP
-                </Text>
-              </TouchableOpacity>
-              <View style={{ width: 15 }} />
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={goToNextSlide}
-                style={[
-                  styles.btn,
-                  {
-                    backgroundColor: '#DB3169',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 10,
-                    padding: 10,
-                  },
-                ]}
-              >
-                <FontAwesome6 name="arrow-right" size={24} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
-          )}
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 15,
+                      color: '#DB3169',
+                    }}
+                  >
+                    SKIP
+                  </Text>
+                </TouchableOpacity>
+                <View style={{ width: 15 }} />
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={goToNextSlide}
+                  style={[
+                    styles.btn,
+                    {
+                      backgroundColor: '#DB3169',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                      padding: 10,
+                    },
+                  ]}
+                >
+                  <FontAwesome6 name="arrow-right" size={24} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      </>
     )
   }
 

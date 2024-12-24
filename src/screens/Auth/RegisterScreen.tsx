@@ -1,19 +1,12 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import Toast from 'react-native-toast-message'
-import { ActivityIndicator, StatusBar, View, SafeAreaView, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Image, Dimensions } from 'react-native'
+import { ActivityIndicator, StatusBar, View, SafeAreaView, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Dimensions } from 'react-native'
 import CheckBox from 'expo-checkbox'
 import Icon from '@expo/vector-icons/Fontisto'
 import ColorSystem from '../../color/ColorSystem'
 import { stateIsLogin } from '../../store/reducers/login.reducer'
 import { usePostRegisterMutation } from '../../services/auth'
-import { useNavigation } from '@react-navigation/native'
-import { set } from 'date-fns'
-import { useCreateCategoryMutation } from '../../services/categories'
-
-const imageAspectRatio = 414 / 218
-const scaleWidth = Dimensions.get('window').width
-const scaleHeight = scaleWidth / imageAspectRatio
 
 const RegisterScreen = ({ navigation }: any) => {
   const [isCheck, setIsCheck] = useState(false)
@@ -24,36 +17,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [checkMail, setCheckMail] = useState(true)
   const [checkName, setCheckName] = useState(true)
   const [errorPass, setErrorPass] = useState('')
-  const [createCategory, { isLoading: isCategoryLoading, isSuccess, isError, error }] = useCreateCategoryMutation()
   let [register, { isLoading }] = usePostRegisterMutation()
-
-  const createDefaultCategory = async (userId) => {
-    const defaultCategory = [
-      { name: 'Tiền lương', type: 'income', userId },
-      { name: 'Tiền thưởng', type: 'income', userId },
-      { name: 'Học bổng', type: 'income', userId },
-      { name: 'Đầu tư', type: 'income', userId },
-      { name: 'Quà tặng', type: 'income', userId },
-      { name: 'Di chuyển', type: 'expense', userId },
-      { name: 'Mua sắm', type: 'expense', userId },
-      { name: 'Ăn uống', type: 'expense', userId },
-      { name: 'Tiết kiệm', type: 'saving', userId },
-      { name: 'Quần áo', type: 'expense', userId },
-      { name: 'Làm đẹp', type: 'expense', userId },
-      { name: 'Hóa đơn', type: 'expense', userId },
-      { name: 'Sức khỏe', type: 'expense', userId },
-      { name: 'Giải trí', type: 'expense', userId },
-    ]
-
-    for (const item of defaultCategory) {
-      try {
-        let msg = await createCategory(item).unwrap()
-        console.log(msg)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  }
 
   const onSubmit = async () => {
     let formData = {
@@ -85,8 +49,7 @@ const RegisterScreen = ({ navigation }: any) => {
       dispatch(
         stateIsLogin({
           isLogin: false,
-          accessToken: authInfo.accessToken,
-          userId: authInfo.userId,
+          access_token: authInfo.access_token,
         })
       )
       navigation.navigate('LoginScreen')
@@ -97,7 +60,6 @@ const RegisterScreen = ({ navigation }: any) => {
         position: 'top',
         topOffset: Dimensions.get('window').height / 2 - 50,
       })
-      await createDefaultCategory(authInfo.userId)
     } catch (error) {
       Alert.alert('Register failed', error.data.message)
       console.log(error)
@@ -105,7 +67,7 @@ const RegisterScreen = ({ navigation }: any) => {
   }
   return (
     <SafeAreaView style={styles.container}>
-      {((isLoading && isLoading === true) || isCategoryLoading) && (
+      {isLoading && (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={ColorSystem.primary[800]} />
         </View>

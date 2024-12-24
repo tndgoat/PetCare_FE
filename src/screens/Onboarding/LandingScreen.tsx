@@ -1,85 +1,88 @@
 import React from 'react'
-import { SafeAreaView, View, ScrollView, Image, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native'
+import { SafeAreaView, View, ScrollView, Image, Text, TouchableOpacity, Dimensions, StyleSheet, StatusBar } from 'react-native'
 
 const { width } = Dimensions.get('window')
 
 const LandingScreen = ({ navigation }: any) => {
   return (
-    <SafeAreaView style={localStyles.container}>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#FFFFFF',
-          paddingTop: 120,
-        }}
-      >
-        <Image source={require('../../images/logop.png')} style={localStyles.logo} />
-        <Text
+    <>
+      <StatusBar barStyle={'dark-content'} backgroundColor={'#fff'}></StatusBar>
+      <SafeAreaView style={localStyles.container}>
+        <View
           style={{
-            color: '#101623',
-            fontWeight: 'bold',
-            fontSize: 22,
-            marginBottom: 15,
-            textAlign: 'center',
+            flex: 1,
+            backgroundColor: '#FFFFFF',
+            paddingTop: 120,
           }}
         >
-          {'Let’s get started!'}
-        </Text>
-        <Text
-          style={{
-            color: '#717784',
-            fontSize: 16,
-            fontWeight: 'regular',
-            marginBottom: 80,
-            textAlign: 'center',
-          }}
-        >
-          {'Login to enjoy the features we’ve\nprovided, and stay healthy!'}
-        </Text>
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#DB3169',
-            borderRadius: 32,
-            paddingVertical: 22,
-            marginBottom: 16,
-            marginHorizontal: 60,
-          }}
-          onPress={() => navigation.navigate('LoginScreen')}
-        >
+          <Image source={require('../../images/logop.png')} style={localStyles.logo} />
           <Text
             style={{
-              color: '#FFFFFF',
-              fontSize: 16,
+              color: '#101623',
               fontWeight: 'bold',
+              fontSize: 22,
+              marginBottom: 15,
+              textAlign: 'center',
             }}
           >
-            {'Login'}
+            {'Let’s get started!'}
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            borderColor: '#DB3169',
-            borderRadius: 32,
-            borderWidth: 1,
-            paddingVertical: 22,
-            marginHorizontal: 60,
-          }}
-          onPress={() => navigation.navigate('RegisterScreen')}
-        >
           <Text
             style={{
-              color: '#DB3169',
+              color: '#717784',
               fontSize: 16,
-              fontWeight: 'bold',
+              fontWeight: 'regular',
+              marginBottom: 80,
+              textAlign: 'center',
             }}
           >
-            {'Sign Up'}
+            {'Login to enjoy the features we’ve\nprovided, and stay healthy!'}
           </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#DB3169',
+              borderRadius: 32,
+              paddingVertical: 22,
+              marginBottom: 16,
+              marginHorizontal: 60,
+            }}
+            onPress={() => navigation.navigate('LoginScreen')}
+          >
+            <Text
+              style={{
+                color: '#FFFFFF',
+                fontSize: 16,
+                fontWeight: 'bold',
+              }}
+            >
+              {'Login'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              alignItems: 'center',
+              borderColor: '#DB3169',
+              borderRadius: 32,
+              borderWidth: 1,
+              paddingVertical: 22,
+              marginHorizontal: 60,
+            }}
+            onPress={() => navigation.navigate('RegisterScreen')}
+          >
+            <Text
+              style={{
+                color: '#DB3169',
+                fontSize: 16,
+                fontWeight: 'bold',
+              }}
+            >
+              {'Sign Up'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </>
   )
 }
 

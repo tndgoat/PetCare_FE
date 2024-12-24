@@ -6,7 +6,7 @@ export const apiSlice = createApi({
     baseUrl: 'https://petcare-sdbq.onrender.com/api/v1',
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as RootState
-      const token = state.LoginStatus.accessToken
+      const token = state.LoginStatus.access_token
       if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }

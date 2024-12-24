@@ -1,9 +1,8 @@
 export type AuthInfo = {
-  accessToken: string;
-  userId: string;
-};
+  access_token: string
+}
 
 export type SignInDto = {
-  email: string;
-  password: string;
-};
+  email: string
+  password: string
+}

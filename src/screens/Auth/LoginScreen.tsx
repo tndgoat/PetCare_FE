@@ -6,13 +6,7 @@ import Icon from '@expo/vector-icons/Fontisto'
 import ColorSystem from '../../color/ColorSystem'
 import { stateIsLogin } from '../../store/reducers/login.reducer'
 import { usePostLoginMutation } from '../../services/auth'
-import { useNavigation } from '@react-navigation/native'
-import { set } from 'date-fns'
 import { AntDesign } from '@expo/vector-icons'
-
-const imageAspectRatio = 414 / 218
-const scaleWidth = Dimensions.get('window').width
-const scaleHeight = scaleWidth / imageAspectRatio
 
 const LoginScreen = ({ navigation }: any) => {
   const [isCheck, setIsCheck] = useState(false)
@@ -55,8 +49,7 @@ const LoginScreen = ({ navigation }: any) => {
       dispatch(
         stateIsLogin({
           isLogin: true,
-          accessToken: authInfo.accessToken,
-          userId: authInfo.userId,
+          access_token: authInfo.access_token,
         })
       )
     } catch (error) {
