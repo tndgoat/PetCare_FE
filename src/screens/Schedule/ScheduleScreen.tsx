@@ -1,42 +1,86 @@
-import React, { useState } from 'react'
-import { SafeAreaView, View, ScrollView, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { SafeAreaView, View, ScrollView, Text, TouchableOpacity, Image, StyleSheet, Dimensions, Alert } from 'react-native'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Entypo from '@expo/vector-icons/Entypo'
 import ScheduleModal from '../../components/Schedule/ScheduleModal'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const ScheduleScreen = () => {
   const [filter, setFilter] = useState('All')
   const [isModalVisible, setModalVisible] = useState(false)
+  const [reminders, setReminders] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  const data = [
-    {
-      title: 'Take Golden for a walk',
-      type: 'Routine',
-      avatar: require('../../images/golden.png'),
-      time: '04:30 PM',
-      details: 'Mr. Golden',
-      recurrence: 'Everyday',
-    },
-    {
-      title: 'Feed Bob',
-      type: 'Routine',
-      avatar: require('../../images/bob.png'),
-      time: '02:00 PM',
-      details: 'Bob',
-      recurrence: 'Everyday',
-    },
-    {
-      title: 'Bob’s neutering',
-      type: 'Appointment',
-      avatar: require('../../images/bob.png'),
-      time: '6:00 PM',
-      details: 'Bob',
-      recurrence: 'Tomorrow',
-      location: 'BK Vet Clinic',
-    },
-  ]
+  const fetchReminders = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('https://petcare-sdbq.onrender.com/api/v1/reminders', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${await AsyncStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      })
 
-  const filteredData = filter === 'All' ? data : data.filter((item) => item.type === filter)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      setReminders(result)
+
+      if (!Array.isArray(result)) {
+        throw new Error('API response is not an array')
+      }
+
+      const formattedReminders = result.map((reminder) => ({
+        id: reminder._id,
+        title: `Reminder for ${reminder.type}`,
+        type: reminder.type,
+        location: reminder.location || 'N/A', // Handle null location
+        occurDate: new Date(reminder.occurDate).toLocaleDateString(),
+        frequency: reminder.frequency,
+        petId: reminder.petId,
+        details: `Shiba Inu`,
+      }))
+
+      setReminders(formattedReminders)
+    } catch (error) {
+      console.error('Error fetching reminders:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteReminder = async (reminderId) => {
+    try {
+      const response = await fetch(`https://petcare-sdbq.onrender.com/api/v1/reminders/${reminderId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${await AsyncStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete reminder: ${response.status}`)
+      }
+
+      // Remove the deleted reminder from the list
+      setReminders((prevReminders) => prevReminders.filter((reminder) => reminder.id !== reminderId))
+
+      Alert.alert('Success', 'Reminder has been deleted successfully.')
+    } catch (error) {
+      console.error('Error deleting reminder:', error)
+      Alert.alert('Error', 'An error occurred while deleting the reminder.')
+    }
+  }
+
+  const filteredData = filter === 'All' ? reminders : reminders.filter((item) => item.type === filter)
+
+  useEffect(() => {
+    fetchReminders()
+  }, [])
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -52,11 +96,11 @@ const ScheduleScreen = () => {
           <TouchableOpacity style={[styles.filterButton, filter === 'All' && styles.activeFilterButton]} onPress={() => setFilter('All')}>
             <Text style={styles.filterButtonText}>{'All'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.filterButton, filter === 'Routine' && styles.activeFilterButton]} onPress={() => setFilter('Routine')}>
-            <Text style={styles.filterButtonText}>{'Routine'}</Text>
+          <TouchableOpacity style={[styles.filterButton, filter === 'feeding' && styles.activeFilterButton]} onPress={() => setFilter('feeding')}>
+            <Text style={styles.filterButtonText}>{'Feeding'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.filterButton, filter === 'Appointment' && styles.activeFilterButton]} onPress={() => setFilter('Appointment')}>
-            <Text style={styles.filterButtonText}>{'Appointment'}</Text>
+          <TouchableOpacity style={[styles.filterButton, filter === 'walking' && styles.activeFilterButton]} onPress={() => setFilter('walking')}>
+            <Text style={styles.filterButtonText}>{'Walking'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -77,24 +121,25 @@ const ScheduleScreen = () => {
                   )}
                 </View>
               </View>
-              <Image source={item.avatar} resizeMode="stretch" style={styles.cardImage} />
+              {/* You can add an image or icon here for pets if needed */}
+              <Image source={require('../../images/golden.png')} resizeMode="stretch" style={styles.cardImage} />
             </View>
 
             <View style={styles.cardDetailsRow}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <AntDesign name="calendar" size={12} color="#555555" />
-                <Text style={[styles.cardDetailText, { marginLeft: 1 }]}>{item.recurrence}</Text>
+                <Text style={[styles.cardDetailText, { marginLeft: 1 }]}>{item.frequency}</Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <AntDesign name="clockcircleo" size={12} color="black" />
-                <Text style={[styles.cardDetailText, { marginLeft: 2 }]}>{item.time}</Text>
+                <Text style={[styles.cardDetailText, { marginLeft: 2 }]}>{item.occurDate}</Text>
               </View>
 
               <Entypo name="dot-single" size={24} color="#7BEB78" />
               <Text style={styles.cardDetailText}>{item.details}</Text>
             </View>
             <View style={styles.cardActionsRow}>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => alert('Pressed!')}>
+              <TouchableOpacity style={styles.cancelButton} onPress={() => deleteReminder(item.id)}>
                 <Text style={styles.cancelButtonText}>{'Cancel'}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.rescheduleButton} onPress={item.type === 'Appointment' ? () => alert('Pressed!') : () => setModalVisible(true)}>
@@ -104,7 +149,12 @@ const ScheduleScreen = () => {
           </View>
         ))}
       </ScrollView>
-      <ScheduleModal isModalVisible={isModalVisible} setModalVisible={setModalVisible} />
+      <ScheduleModal
+        isModalVisible={isModalVisible}
+        setModalVisible={setModalVisible}
+        setReminders={setReminders} // Pass setReminders to update reminders
+        fetchReminders={fetchReminders} // Pass fetchReminders to refresh the reminders list
+      />
     </SafeAreaView>
   )
 }
