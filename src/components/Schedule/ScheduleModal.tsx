@@ -1,30 +1,68 @@
-import React, { useState } from 'react'
-import { Modal, View, Text, TextInput, TouchableOpacity, Dimensions, ScrollView, StyleSheet } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { Modal, View, Text, TextInput, TouchableOpacity, Dimensions, ScrollView, StyleSheet, ActivityIndicator } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { Dropdown } from 'react-native-element-dropdown'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const data1 = [
-  { label: 'Bob the Crying Cat', value: 'pet1' },
-  { label: 'Mr. Golden', value: 'pet2' },
-  { label: 'Bob’s Snack', value: 'pet3' },
-]
+interface ScheduleModalProps {
+  isModalVisible: boolean
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
+  setReminders: React.Dispatch<React.SetStateAction<any[]>>
+  fetchReminders: () => Promise<void>
+}
 
-const data2 = [
-  { label: 'Routine', value: 'Routine' },
-  { label: 'Appointment', value: 'Appointment' },
-  { label: 'Other', value: 'Other' },
-]
-
-const ScheduleModal = ({ isModalVisible, setModalVisible }) => {
+const ScheduleModal: React.FC<ScheduleModalProps> = ({ isModalVisible, setModalVisible, setReminders, fetchReminders }) => {
   const { width, height } = Dimensions.get('window')
   const [titleInput, onChangeTitleInput] = useState('')
-  const [value1, setValue1] = useState(data1[0].value)
-  const [value2, setValue2] = useState(data2[0].value)
+  const [pets, setPets] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [value1, setValue1] = useState(null)
+  const [value2, setValue2] = useState('Routine')
   const [selectedDateOption, setSelectedDateOption] = useState('Everyday')
   const [showDate, setShowDate] = useState(false)
   const [showTime, setShowTime] = useState(false)
   const [date, setDate] = useState(new Date())
+
+  useEffect(() => {
+    if (isModalVisible) {
+      fetchPets()
+    }
+  }, [isModalVisible])
+
+  const fetchPets = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('https://petcare-sdbq.onrender.com/api/v1/pets', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${await AsyncStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      if (!Array.isArray(result)) {
+        throw new Error('API response is not an array')
+      }
+
+      const formattedPets = result.map((pet) => ({
+        label: pet.name,
+        value: pet._id,
+      }))
+      setPets(formattedPets)
+      setValue1(formattedPets[0]?.value || null)
+    } catch (error) {
+      console.error('Error fetching pets:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const onChangeTime = (event, selectedDate) => {
     const currentDate = selectedDate || date
@@ -38,14 +76,12 @@ const ScheduleModal = ({ isModalVisible, setModalVisible }) => {
     setDate(currentDate)
   }
 
-  const renderItem = (item, selectedValue, iconName) => {
-    return (
-      <View style={styles.item}>
-        {item.value === selectedValue && <MaterialIcons style={styles.icon} name={iconName} size={24} color="#DB3169" />}
-        <Text style={styles.textItem}>{item.label}</Text>
-      </View>
-    )
-  }
+  const renderItem = (item, selectedValue, iconName) => (
+    <View style={styles.item}>
+      {item.value === selectedValue && <MaterialIcons style={styles.icon} name={iconName} size={24} color="#DB3169" />}
+      <Text style={styles.textItem}>{item.label}</Text>
+    </View>
+  )
 
   const formatDate = (date) => {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -53,6 +89,44 @@ const ScheduleModal = ({ isModalVisible, setModalVisible }) => {
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const handleSave = async () => {
+    const occurDate = new Date()
+    occurDate.setDate(occurDate.getDate() + 7) // Add 7 days
+    const formattedOccurDate = occurDate.toISOString().split('T')[0] // Convert to YYYY-MM-DD format
+
+    const requestBody = {
+      frequency: 'daily',
+      type: value2, // Schedule type, e.g. 'feeding', 'walking', etc.
+      occurDate: formattedOccurDate,
+      petId: value1, // ID of the selected pet
+    }
+
+    try {
+      const response = await fetch('https://petcare-sdbq.onrender.com/api/v1/reminders', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${await AsyncStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      alert('Reminder saved successfully!')
+      setModalVisible(false) // Close the modal after successful save
+
+      // Refresh the reminders list
+      await fetchReminders() // Call the fetchReminders function passed from parent
+    } catch (error) {
+      console.error('Error saving reminder:', error)
+      alert('Failed to save reminder.')
+    }
   }
 
   return (
@@ -63,16 +137,20 @@ const ScheduleModal = ({ isModalVisible, setModalVisible }) => {
             <Text style={styles.headerText}>{'Set up new schedule'}</Text>
 
             <Text style={styles.labelText}>{'For whom?'}</Text>
-            <Dropdown
-              style={styles.dropdown}
-              data={data1}
-              labelField="label"
-              valueField="value"
-              placeholder="Select pet"
-              value={value1}
-              onChange={(item) => setValue1(item.value)}
-              renderItem={(item) => renderItem(item, value1, 'pets')}
-            />
+            {loading ? (
+              <ActivityIndicator size="large" color="#DB3169" />
+            ) : (
+              <Dropdown
+                style={styles.dropdown}
+                data={pets}
+                labelField="label"
+                valueField="value"
+                placeholder="Select pet"
+                value={value1}
+                onChange={(item) => setValue1(item.value)}
+                renderItem={(item) => renderItem(item, value1, 'pets')}
+              />
+            )}
 
             <Text style={styles.labelText}>{'Title'}</Text>
             <TextInput placeholder={'Write a fascinating title'} value={titleInput} onChangeText={onChangeTitleInput} style={styles.textInput} />
@@ -80,7 +158,12 @@ const ScheduleModal = ({ isModalVisible, setModalVisible }) => {
             <Text style={styles.labelText}>{'Type of schedule'}</Text>
             <Dropdown
               style={styles.dropdown}
-              data={data2}
+              data={[
+                { label: 'Feeding', value: 'feeding' },
+                { label: 'Walking', value: 'walking' },
+                { label: 'Bathing', value: 'Bathing' },
+                { label: 'Other', value: 'Other' },
+              ]}
               labelField="label"
               valueField="value"
               placeholder="Select schedule type"
@@ -122,7 +205,7 @@ const ScheduleModal = ({ isModalVisible, setModalVisible }) => {
               <TouchableOpacity style={styles.unselectedButton} onPress={() => setModalVisible(false)}>
                 <Text style={styles.unselectedButtonText}>{'Cancel'}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.selectedButton} onPress={() => alert('Saved!')}>
+              <TouchableOpacity style={styles.selectedButton} onPress={handleSave}>
                 <Text style={styles.selectedButtonText}>{'Save'}</Text>
               </TouchableOpacity>
             </View>
