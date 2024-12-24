@@ -49,14 +49,14 @@ const RegisterScreen = ({ navigation }: any) => {
       dispatch(
         stateIsLogin({
           isLogin: false,
-          access_token: authInfo.access_token,
+          access_token: authInfo.result.access_token,
         })
       )
       navigation.navigate('LoginScreen')
       Toast.show({
         type: 'success',
-        text1: 'Chúc mừng bạn đã đăng ký thành công',
-        text2: 'Hãy đăng nhập để trải nghiệm ngay!',
+        text1: 'Account registration successful!',
+        text2: 'Login to explore more!',
         position: 'top',
         topOffset: Dimensions.get('window').height / 2 - 50,
       })

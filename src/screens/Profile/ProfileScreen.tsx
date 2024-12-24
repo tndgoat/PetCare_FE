@@ -1,11 +1,11 @@
-// ProfileScreen.tsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView, View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import LogoutModal from '../../components/Profile/LogoutModal'
 import { useAppDispatch } from '../../hooks/redux'
 import { logOut } from '../../store/reducers/login.reducer'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
 
 interface MenuItem {
   id: string
@@ -17,7 +17,26 @@ interface MenuItem {
 
 const ProfileScreen = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [userName, setUserName] = useState<string>('')
   const navigation = useNavigation<any>()
+
+  // API call to fetch user info
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('https://petcare-sdbq.onrender.com/api/v1/users/me', {
+          headers: {
+            Authorization: `Bearer ${await AsyncStorage.getItem('access_token')}`,
+          },
+        })
+        setUserName(response.data.result.name)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    fetchUserData()
+  }, [])
 
   const menuItems: MenuItem[] = [
     {
@@ -80,7 +99,7 @@ const ProfileScreen = () => {
             style={styles.profileImage}
           />
           <Image source={require('../../images/bg-cover.png')} style={styles.profileCover} />
-          <Text style={styles.userName}>Tung Nguyen</Text>
+          <Text style={styles.userName}>{userName}</Text>
         </View>
 
         {/* Stats Section */}
@@ -116,7 +135,7 @@ const ProfileScreen = () => {
         </View>
       </ScrollView>
 
-      <LogoutModal visible={showLogoutModal} onClose={() => setShowLogoutModal(false)} onLogout={handleLogout} username="Tung Nguyen" />
+      <LogoutModal visible={showLogoutModal} onClose={() => setShowLogoutModal(false)} onLogout={handleLogout} username={userName} />
     </SafeAreaView>
   )
 }
