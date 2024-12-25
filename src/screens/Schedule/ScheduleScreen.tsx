@@ -35,9 +35,9 @@ const ScheduleScreen = () => {
 
       const formattedReminders = result.map((reminder) => ({
         id: reminder._id,
-        title: `Reminder for ${reminder.type}`,
-        type: reminder.type,
-        location: reminder.location || 'N/A', // Handle null location
+        title: `Reminder for ${reminder.type === 'other' ? 'appointment' : reminder.type}`,
+        type: reminder.type, // Sửa cả giá trị type
+        location: 'Ho Chi Minh City', // Handle null location
         occurDate: new Date(reminder.occurDate).toLocaleDateString(),
         frequency: reminder.frequency,
         petId: reminder.petId,
@@ -76,7 +76,12 @@ const ScheduleScreen = () => {
     }
   }
 
-  const filteredData = filter === 'All' ? reminders : reminders.filter((item) => item.type === filter)
+  const filteredData =
+    {
+      All: reminders,
+      NotOther: reminders.filter((item) => item.type !== 'other'),
+      Other: reminders.filter((item) => item.type === 'other'),
+    }[filter] || reminders
 
   useEffect(() => {
     fetchReminders()
@@ -96,11 +101,11 @@ const ScheduleScreen = () => {
           <TouchableOpacity style={[styles.filterButton, filter === 'All' && styles.activeFilterButton]} onPress={() => setFilter('All')}>
             <Text style={styles.filterButtonText}>{'All'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.filterButton, filter === 'feeding' && styles.activeFilterButton]} onPress={() => setFilter('feeding')}>
-            <Text style={styles.filterButtonText}>{'Feeding'}</Text>
+          <TouchableOpacity style={[styles.filterButton, filter === 'NotOther' && styles.activeFilterButton]} onPress={() => setFilter('NotOther')}>
+            <Text style={styles.filterButtonText}>{'Routine'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.filterButton, filter === 'walking' && styles.activeFilterButton]} onPress={() => setFilter('walking')}>
-            <Text style={styles.filterButtonText}>{'Walking'}</Text>
+          <TouchableOpacity style={[styles.filterButton, filter === 'Other' && styles.activeFilterButton]} onPress={() => setFilter('Other')}>
+            <Text style={styles.filterButtonText}>{'Appointment'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -112,7 +117,7 @@ const ScheduleScreen = () => {
               <View style={styles.cardHeaderTextContainer}>
                 <Text style={styles.cardTitle}>{item.title}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.cardSubtitle}>{item.type}</Text>
+                  <Text style={styles.cardSubtitle}>{item.type === 'other' ? 'appointment' : item.type}</Text>
                   {item.location && (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <Entypo name="location-pin" size={16} color="black" style={{ marginLeft: 10 }} />

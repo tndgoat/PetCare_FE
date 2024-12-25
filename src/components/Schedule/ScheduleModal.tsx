@@ -93,7 +93,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isModalVisible, setModalV
 
   const handleSave = async () => {
     const occurDate = new Date()
-    occurDate.setDate(occurDate.getDate() + 7) // Add 7 days
+    occurDate.setDate(occurDate.getDate() + 1)
     const formattedOccurDate = occurDate.toISOString().split('T')[0] // Convert to YYYY-MM-DD format
 
     const requestBody = {
@@ -161,8 +161,8 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ isModalVisible, setModalV
               data={[
                 { label: 'Feeding', value: 'feeding' },
                 { label: 'Walking', value: 'walking' },
-                { label: 'Bathing', value: 'Bathing' },
-                { label: 'Other', value: 'Other' },
+                { label: 'Bathing', value: 'bathing' },
+                { label: 'Appointment', value: 'other' },
               ]}
               labelField="label"
               valueField="value"
