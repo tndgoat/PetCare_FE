@@ -94,9 +94,12 @@ const PetRecordForm: React.FC<PetRecordFormProps> = ({
 
       let response: any;
       if (mode === "add") {
+        console.log(JSON.stringify(formData, null, 2));
         response = await axios.post(API_URL, formData, { headers });
       } else {
-        response = await axios.patch(API_URL, formData, { headers });
+        const { petId, ...newPayload } = formData;
+        console.log(JSON.stringify(newPayload, null, 2));
+        response = await axios.patch(API_URL, newPayload, { headers });
       }
 
       if (response.status < 200 || response.status >= 300) {

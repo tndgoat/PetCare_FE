@@ -226,15 +226,16 @@ const PetForm: React.FC<PetFormProps> = ({
   const onSubmit = async (data: PetFormData) => {
     try {
       setIsLoading(true);
-      const age = calculateAge(data.birthday);
+      const { age, ...rest } = data;
       const payload = {
-        ...data,
-        age,
+        ...rest,
         weight: Number(data.weight),
         avatar:
           data.avatar ||
           "https://images.unsplash.com/photo-1516366434321-728a48e6b7bf?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       };
+
+      console.log(JSON.stringify(payload, null, 2));
 
       const response = await fetch(API_URL, {
         method: mode === "add" ? "POST" : "PATCH",
@@ -360,7 +361,7 @@ const PetForm: React.FC<PetFormProps> = ({
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Pet Type</Text>
               <View style={styles.radioGroup}>
-                {(["cat", "dog", "other"] as PetType[]).map((type) => (
+                {(["cat", "dog"] as PetType[]).map((type) => (
                   <RadioButton
                     key={type}
                     selected={value === type}

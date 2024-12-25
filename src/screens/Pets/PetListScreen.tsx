@@ -67,7 +67,7 @@ const PetListScreen: React.FC = ({ refetch }: any) => {
         <Text style={styles.addButtonText}>Add Pet</Text>
       </TouchableOpacity>
       <ScrollView style={styles.scrollView}>
-        {pets?.map((pet: PetProps) => (
+        {pets?.reverse()?.map((pet: PetProps) => (
           <PetCard key={pet._id} pet={pet} />
         ))}
       </ScrollView>
