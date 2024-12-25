@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,75 +11,161 @@ import {
   Platform,
   FlatList,
   Image,
+  Alert,
 } from "react-native";
 
-interface Comment {
-  id: string;
-  user: {
-    name: string;
-    avatar: string;
-  };
-  timeAgo: string;
-  content: string;
+// API configuration
+const API_BASE_URL = "https://petcare-sdbq.onrender.com/api/v1";
+
+// API functions
+const getCommentsForPost = async (postId: string, token: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments`, {
+      method: "GET",
+      headers: {
+        accept: "*/*",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch comments");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw error;
+  }
+};
+
+const addComment = async (postId: string, content: string, token: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/comments`, {
+      method: "POST",
+      headers: {
+        accept: "*/*",
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        postId,
+        content,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add comment");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
+};
+
+interface User {
+  _id: string;
+  name: string;
+  avatar: string;
 }
 
+interface Comment {
+  _id: string;
+  content: string;
+  userId: User;
+  postId: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+const formatTimeAgo = (dateString: string): string => {
+  const now = new Date();
+  const commentDate = new Date(dateString);
+  const diffInMinutes = Math.floor(
+    (now.getTime() - commentDate.getTime()) / (1000 * 60)
+  );
+
+  if (diffInMinutes < 1) return "just now";
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays}d ago`;
+};
 interface CommentsModalProps {
   isVisible: boolean;
   onClose: () => void;
   postId: string;
+  refetch: () => void;
 }
 
 const CommentsModal: React.FC<CommentsModalProps> = ({
   isVisible,
   onClose,
   postId,
+  refetch = () => {},
 }) => {
   const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Sample comments data
-  const comments: Comment[] = [
-    {
-      id: "1",
-      user: {
-        name: "Nathan-nguyen",
-        avatar: "https://via.placeholder.com/40",
-      },
-      timeAgo: "3 min",
-      content:
-        "Everything you need to know about Pet in 10 minutes, everything you need to know about Pet in 10 minutes",
-    },
-    {
-      id: "2",
-      user: {
-        name: "Peonit-nguyen",
-        avatar: "https://via.placeholder.com/40",
-      },
-      timeAgo: "15 min",
-      content:
-        "Everything you need to know about Pet in 10 minutes, everything you need to know about Pet in 10 minutes",
-    },
-  ];
+  useEffect(() => {
+    if (isVisible) {
+      console.log("Hell minhhieu");
+      fetchComments();
+    }
+  }, [isVisible]);
 
+  const fetchComments = async () => {
+    try {
+      setIsLoading(true);
+      const token = await AsyncStorage.getItem("access_token");
+      const response = await getCommentsForPost(postId, token);
+      setComments(response || []);
+
+      console.log(response);
+    } catch (error) {
+      Alert.alert("Error", "Failed to load comments");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendComment = async () => {
+    if (commentText.trim()) {
+      try {
+        setIsLoading(true);
+        const token = await AsyncStorage.getItem("access_token");
+        await addComment(postId, commentText.trim(), token);
+        setCommentText("");
+        await fetchComments();
+      } catch (error) {
+        Alert.alert("Error", "Failed to add comment");
+      } finally {
+        setIsLoading(false);
+        refetch();
+      }
+    }
+  };
+
+  // Updated render function to use the new type
   const renderComment = ({ item }: { item: Comment }) => (
     <View style={styles.commentContainer}>
-      <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
+      <Image source={{ uri: item.userId.avatar }} style={styles.avatar} />
       <View style={styles.commentContent}>
         <View style={styles.commentHeader}>
-          <Text style={styles.userName}>{item.user.name}</Text>
-          <Text style={styles.timeAgo}>{item.timeAgo}</Text>
+          <Text style={styles.userName}>{item.userId.name}</Text>
+          <Text style={styles.timeAgo}>{formatTimeAgo(item.createdAt)}</Text>
         </View>
         <Text style={styles.commentText}>{item.content}</Text>
       </View>
     </View>
   );
-
-  const handleSendComment = () => {
-    if (commentText.trim()) {
-      // Handle sending comment
-      console.log("Sending comment:", commentText);
-      setCommentText("");
-    }
-  };
 
   return (
     <Modal
@@ -101,8 +188,10 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         <FlatList
           data={comments}
           renderItem={renderComment}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           contentContainerStyle={styles.commentsList}
+          refreshing={isLoading}
+          onRefresh={fetchComments}
         />
 
         <View style={styles.inputContainer}>
@@ -114,9 +203,20 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
               placeholder="comment message"
               placeholderTextColor="#999"
               multiline
+              editable={!isLoading}
             />
-            <TouchableOpacity onPress={handleSendComment}>
-              <Text style={styles.sendButton}>➤</Text>
+            <TouchableOpacity
+              onPress={handleSendComment}
+              disabled={isLoading || !commentText.trim()}
+            >
+              <Text
+                style={[
+                  styles.sendButton,
+                  (!commentText.trim() || isLoading) && { opacity: 0.5 },
+                ]}
+              >
+                ➤
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

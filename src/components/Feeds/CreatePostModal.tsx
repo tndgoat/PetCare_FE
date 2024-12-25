@@ -16,6 +16,7 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Linking } from "react-native";
 
 type PostCategory = "moment" | "knowledge" | "lostpet";
 
@@ -36,6 +37,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [category, setCategory] = useState<PostCategory>("knowledge");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     content: "",
     description: "",
@@ -175,6 +177,8 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setSelectedImage(null);
     setCategory("knowledge");
   };
+
+
 
   const renderImagePicker = () => (
     <View style={styles.imageUploadBox}>
@@ -372,27 +376,25 @@ const styles = StyleSheet.create({
   },
   postButton: {
     backgroundColor: "#ff4081",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 12,
+    minWidth: "92%",
+    paddingHorizontal: 20, // Thêm padding ngang
     borderRadius: 8,
-    width: "92%",
-    marginTop: 10,
-    marginBottom: 10,
+    alignSelf: "center", // Thay thế marginHorizontal: "auto"
+    marginVertical: 10, // Thay thế marginTop và marginBottom
   },
   bottomPadding: {
     height: 10,
   },
   postButtonDisabled: {
-    backgroundColor: "#ffa4c4",
-    marginHorizontal: "auto",
+    backgroundColor: "#ff4081",
+    opacity: 0.6, // Thêm opacity để thể hiện trạng thái disabled
   },
   postButtonText: {
     color: "#fff",
-    marginHorizontal: "auto",
+    fontSize: 16,
     fontWeight: "600",
-    width: "100%",
     textAlign: "center",
-    padding: 6,
   },
   categorySelector: {
     padding: 16,
