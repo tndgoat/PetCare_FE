@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import PetListScreen from "./PetListScreen";
 import PetProfileScreen from "./PetProfileScreen";
-import { NavigationContainer } from "@react-navigation/native";
-import AddPetScreen from "./AddPet";
+import PetForm from "./AddPet";
 
 const Stack = createStackNavigator();
 
 const PetsScreen: React.FC = () => {
+  const [refetch, setRefetch] = useState(false);
+
   return (
     <Stack.Navigator initialRouteName="PetListScreen">
       <Stack.Screen
         name="PetListScreen"
-        component={PetListScreen}
+        component={(props: any) => (
+          <PetListScreen {...props} refetch={refetch} />
+        )}
         options={{ title: "My Pets" }}
       />
       <Stack.Screen
@@ -22,7 +25,9 @@ const PetsScreen: React.FC = () => {
       />
       <Stack.Screen
         name="AddPet"
-        component={AddPetScreen}
+        component={(props: any) => (
+          <PetForm {...props} setRefetch={() => setRefetch((prev) => !prev)} />
+        )}
         options={{ title: "Add Pet" }}
       />
     </Stack.Navigator>

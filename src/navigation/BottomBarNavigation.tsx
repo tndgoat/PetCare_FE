@@ -20,8 +20,11 @@ export default function BottomBarNavigation() {
       screenOptions={{
         tabBarStyle: {
           backgroundColor: "#fff",
-          borderTopRightRadius: 20,
-          borderTopLeftRadius: 20,
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+          paddingBottom: 10,
+          height: 60,
+          paddingTop: 6,
         }, // Background color
         tabBarActiveTintColor: ColorSystem.primary[500], // Active tab label color
         tabBarInactiveTintColor: ColorSystem.neutral[300], // Inactive tab label color

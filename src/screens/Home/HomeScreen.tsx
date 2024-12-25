@@ -1,6 +1,6 @@
 // App.tsx
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -12,6 +12,9 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { PetProps } from "../Pets/PetListScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 interface Pet {
   id: string;
@@ -35,37 +38,6 @@ interface Reminder {
   date: string;
   icon: string;
 }
-
-const pets: Pet[] = [
-  {
-    id: "1",
-    name: "Bob the crying",
-    imageUrl:
-      "https://plus.unsplash.com/premium_photo-1708724049005-192fe5c23269?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y3V0ZSUyMHBldHN8ZW58MHx8MHx8fDA%3D",
-    type: "Persian Cat",
-  },
-  {
-    id: "2",
-    name: "Mr. Golden",
-    imageUrl:
-      "https://static.vecteezy.com/system/resources/thumbnails/046/838/762/small/dog-with-pink-bow-on-head-clean-pastel-background-photo.jpg",
-    type: "Golden Dog",
-  },
-  {
-    id: "3",
-    name: "Bob's Snack",
-    imageUrl:
-      "https://t4.ftcdn.net/jpg/01/99/00/79/360_F_199007925_NolyRdRrdYqUAGdVZV38P4WX8pYfBaRP.jpg",
-    type: "Hamster",
-  },
-  {
-    id: "4",
-    name: "Bob's Snack",
-    imageUrl:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTshMxMfzQRhXkMwifz_05Uw58XurkM17LvMsd0Dh2MHJW1ptAZ3qEcmkCQkFKtgNiM6z4&usqp=CAU",
-    type: "Hamster",
-  },
-];
 
 const appointments: Appointment[] = [
   {
@@ -94,8 +66,32 @@ const reminders: Reminder[] = [
   },
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({ refetch }: any) => {
   const navigation = useNavigation<any>();
+  const [pets, setPets] = useState<PetProps[]>();
+
+  // API call to fetch user info
+  const fetchUserPets = async () => {
+    try {
+      const response = await axios.get(
+        "https://petcare-sdbq.onrender.com/api/v1/pets",
+        {
+          headers: {
+            Authorization: `Bearer ${await AsyncStorage.getItem(
+              "access_token"
+            )}`,
+          },
+        }
+      );
+      setPets(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserPets();
+  }, [refetch]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -149,17 +145,15 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.petsScrollContainer}
           >
-            {pets.map((pet) => (
+            {pets?.map((pet) => (
               <TouchableOpacity
-                key={pet.id}
+                key={pet._id}
                 style={styles.petCard}
-                onPress={() =>
-                  navigation.navigate("PetProfileScreen", { petData: pet })
-                }
+                onPress={() => navigation.navigate("Pets", { petData: pet })}
               >
                 <Image
                   source={{
-                    uri: pet.imageUrl,
+                    uri: pet.avatar,
                   }}
                   style={styles.petImage}
                 />

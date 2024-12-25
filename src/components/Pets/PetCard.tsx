@@ -11,16 +11,7 @@ import {
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-
-export interface PetProps {
-  id: string;
-  name: string;
-  type: string;
-  age: string;
-  gender: string;
-  status: string;
-  imageUrl: string;
-}
+import { PetProps } from "../../screens/Pets/PetListScreen";
 
 const PetCard: React.FC<{ pet: PetProps }> = ({ pet }) => {
   const navigation = useNavigation<any>();
@@ -31,15 +22,19 @@ const PetCard: React.FC<{ pet: PetProps }> = ({ pet }) => {
       activeOpacity={0.7}
       onPress={() => navigation.navigate("PetProfileScreen", { petData: pet })}
     >
-      <Image source={{ uri: pet.imageUrl }} style={styles.petImage} />
+      <Image
+        source={{
+          uri:
+            pet?.avatar ||
+            "https://cdn-icons-png.flaticon.com/512/4823/4823463.png",
+        }}
+        style={styles.petImage}
+      />
       <View style={styles.petInfo}>
-        <Text style={styles.petName}>{pet.name}</Text>
-        <Text style={styles.petDetail}>{pet.type}</Text>
-        <Text style={styles.petDetail}>{pet.age}</Text>
-        <Text style={styles.petDetail}>
-          {pet.gender}
-          {pet.status ? `, ${pet.status}` : ""}
-        </Text>
+        <Text style={styles.petName}>{pet?.name}</Text>
+        <Text style={styles.petDetail}>{pet?.breed}</Text>
+        <Text style={styles.petDetail}>{pet.weight} Kg</Text>
+        <Text style={styles.petDetail}>{pet.gender}</Text>
       </View>
       <TouchableOpacity style={styles.arrowButton}>
         <MaterialIcons name="arrow-right" size={25} color="#ffffff" />
@@ -85,7 +80,7 @@ const styles = StyleSheet.create({
   petImage: {
     width: 80,
     height: 80,
-    borderRadius: 8,
+    borderRadius: 100,
   },
   petInfo: {
     flex: 1,

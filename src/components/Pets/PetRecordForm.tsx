@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,37 +8,114 @@ import {
   KeyboardAvoidingView,
   Platform,
   Modal,
+  Pressable,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
+
+interface PetRecord {
+  _id?: string;
+  type: string;
+  name: string;
+  location: string;
+  timeStamp: string;
+  petId: string;
+}
+
+enum RecordType {
+  VACCINATION = "vaccination",
+  NEUTERING = "neutering",
+  SURGERY = "surgery",
+  DIAGNOSIS = "diagnosis",
+  DENTAL = "dental",
+  OTHER = "other",
+}
 
 interface PetRecordFormProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: any;
+  petId: string;
+  mode: "add" | "update";
+  record?: PetRecord;
+  onSuccess: () => void;
 }
 
-interface PetRecord {
-  type: string;
-  name: string;
-  location: string;
-  date: string;
-}
+const API_URL = "https://petcare-sdbq.onrender.com/api/v1/records";
 
 const PetRecordForm: React.FC<PetRecordFormProps> = ({
   visible,
   onClose,
-  onSubmit,
+  petId,
+  mode,
+  record,
+  onSuccess,
 }) => {
-  const [formData, setFormData] = useState<PetRecord>({
-    type: "",
+  const [formData, setFormData] = useState<Partial<PetRecord>>({
+    type: RecordType.VACCINATION,
     name: "",
     location: "",
-    date: "",
+    timeStamp: new Date().toISOString(),
+    petId: petId,
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
 
-  const handleSubmit = () => {
-    onSubmit(formData);
-    setFormData({ type: "", name: "", location: "", date: "" });
-    onClose();
+  useEffect(() => {
+    if (mode === "update" && record) {
+      setFormData({
+        _id: record._id,
+        type: record.type,
+        name: record.name,
+        location: record.location,
+        timeStamp: record.timeStamp,
+        petId: record.petId,
+      });
+      setDate(new Date(record.timeStamp));
+    }
+  }, [mode, record]);
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      setFormData({ ...formData, timeStamp: selectedDate.toISOString() });
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const headers = {
+        Accept: "*/*",
+        Authorization: `Bearer ${await AsyncStorage.getItem("access_token")}`,
+        "Content-Type": "application/json",
+      };
+
+      let response: any;
+      if (mode === "add") {
+        response = await axios.post(API_URL, formData, { headers });
+      } else {
+        response = await axios.patch(API_URL, formData, { headers });
+      }
+
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error("Network response was not ok");
+      }
+
+      setFormData({
+        type: "other",
+        name: "",
+        location: "",
+        timeStamp: new Date().toISOString(),
+        petId: petId,
+      });
+      onClose();
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      onSuccess();
+    }
   };
 
   return (
@@ -57,23 +134,38 @@ const PetRecordForm: React.FC<PetRecordFormProps> = ({
             <TouchableOpacity onPress={onClose} style={styles.backButton}>
               <Text style={styles.backButtonText}>Back</Text>
             </TouchableOpacity>
-            <Text style={styles.title}>My Pets</Text>
+            <Text style={styles.title}>
+              {mode === "add" ? "Add Pet Record" : "Update Pet Record"}
+            </Text>
             <TouchableOpacity onPress={handleSubmit} style={styles.addButton}>
-              <Text style={styles.addButtonText}>Add</Text>
+              <Text style={styles.addButtonText}>
+                {mode === "add" ? "Add" : "Update"}
+              </Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.form}>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Type</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Record type"
-                value={formData.type}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, type: text })
-                }
-              />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={formData.type}
+                  onValueChange={(itemValue) =>
+                    setFormData({ ...formData, type: itemValue })
+                  }
+                  style={styles.picker}
+                >
+                  <Picker.Item
+                    label="Vaccination"
+                    value={RecordType.VACCINATION}
+                  />
+                  <Picker.Item label="Neutering" value={RecordType.NEUTERING} />
+                  <Picker.Item label="Surgery" value={RecordType.SURGERY} />
+                  <Picker.Item label="Diagnosis" value={RecordType.DIAGNOSIS} />
+                  <Picker.Item label="Dental" value={RecordType.DENTAL} />
+                  <Picker.Item label="Other" value={RecordType.OTHER} />
+                </Picker>
+              </View>
             </View>
 
             <View style={styles.inputContainer}>
@@ -102,15 +194,21 @@ const PetRecordForm: React.FC<PetRecordFormProps> = ({
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Date</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Record date"
-                value={formData.date}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, date: text })
-                }
-              />
+              <Pressable onPress={() => setShowDatePicker(true)}>
+                <View style={styles.input}>
+                  <Text>{date.toLocaleDateString()}</Text>
+                </View>
+              </Pressable>
             </View>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -135,6 +233,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
   },
   backButton: {
+    fontSize: 16,
     padding: 8,
   },
   backButtonText: {
@@ -169,6 +268,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
   },
 });
 
