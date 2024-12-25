@@ -144,17 +144,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
         phoneNo: formData.phoneNo || "",
       };
 
-      console.log(JSON.stringify(postData, null, 2));
-
-      await axios.post(`${API_URL}/posts`, postData, {
-        headers: {
-          Accept: "*/*",
-          Authorization: `Bearer ${await AsyncStorage.getItem("access_token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      onSubmit(postData);
+      onSubmit(postData); // This will handle the API call
       resetForm();
       onClose();
     } catch (error) {
@@ -177,8 +167,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setSelectedImage(null);
     setCategory("knowledge");
   };
-
-
 
   const renderImagePicker = () => (
     <View style={styles.imageUploadBox}>
