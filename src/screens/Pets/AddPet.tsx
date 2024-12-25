@@ -33,7 +33,7 @@ interface PetFormData {
   gender: Gender;
   isNeutered: boolean;
   weight: string;
-  // description?: string;
+  description?: string;
   avatar?: string;
   age: number;
 }
@@ -64,7 +64,7 @@ const petFormSchema = yup.object().shape({
     .string()
     .required("Weight is required")
     .matches(/^\d*\.?\d*$/, "Weight must be a number"),
-  // description: yup.string().optional(),
+  description: yup.string().optional(),
   avatar: yup.string().optional(),
 });
 
@@ -461,7 +461,7 @@ const PetForm: React.FC<PetFormProps> = ({
           )}
         />
 
-        {/* <Controller
+        <Controller
           control={control}
           name="description"
           render={({ field: { onChange, value } }) => (
@@ -477,7 +477,7 @@ const PetForm: React.FC<PetFormProps> = ({
               />
             </View>
           )}
-        /> */}
+        />
 
         <TouchableOpacity
           style={[
@@ -600,10 +600,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-  // description: {
-  //   height: 100,
-  //   textAlignVertical: "top",
-  // },
+  description: {
+    height: 100,
+    textAlignVertical: "top",
+  },
   submitButton: {
     backgroundColor: "#FF69B4",
     padding: 16,

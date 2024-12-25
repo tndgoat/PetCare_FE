@@ -26,6 +26,7 @@ export interface PetProps {
   birthday: string;
   createdAt: string;
   updatedAt: string;
+  description: string;
   __v: number;
 }
 

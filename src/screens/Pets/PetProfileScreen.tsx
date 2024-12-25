@@ -121,9 +121,8 @@ const PetDetailScreen: React.FC = ({ route }: any) => {
           <Text style={styles.infoLabel}>Description</Text>
         </View>
         <Text style={styles.infoValue}>
-          Max là một chú chó cực kỳ thân thiện và đáng yêu. Với bộ lông mượt mà
-          và đôi mắt sáng long lanh, cậu ấy luôn là trung tâm của sự chú ý trong
-          mỗi buổi đi dạo.
+          {pet.description ||
+            "Max là một chú chó cực kỳ thân thiện và đáng yêu. Với bộ lông mượt mà và đôi mắt sáng long lanh, cậu ấy luôn là trung tâm của sự chú ý trong mỗi buổi đi dạo."}
         </Text>
       </View>
     </View>
