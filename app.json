@@ -26,15 +26,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "@sentry/react-native/expo",
-        {
-          "organization": "PetCare",
-          "project": "react-native"
-        }
-      ]
-    ],
+    "plugins": [],
     "extra": {
       "eas": {
         "projectId": "8fd3582f-4460-45d3-9714-6bd559cba22d"

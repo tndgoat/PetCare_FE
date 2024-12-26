@@ -5,12 +5,6 @@ import { Provider } from 'react-redux'
 import { store } from './src/store'
 import AppMenuProvider from './src/navigation/AppMenuProvider'
 import Toast from 'react-native-toast-message'
-import * as Sentry from '@sentry/react-native'
-
-const Stack = createStackNavigator()
-Sentry.init({
-  dsn: 'https://e3171e9ce907fe960e53013922c95c8d@o4508501516746752.ingest.us.sentry.io/4508501518516224',
-})
 
 const App = () => {
   return (
@@ -21,4 +15,4 @@ const App = () => {
   )
 }
 
-export default Sentry.wrap(App)
+export default App

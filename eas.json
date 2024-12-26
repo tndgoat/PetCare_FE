@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 9.1.0"
+    "version": ">= 14.2.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -16,6 +17,9 @@
       "channel": "preview"
     },
     "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
       "channel": "production"
     }
   },
